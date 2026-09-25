@@ -1,0 +1,2922 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0b1020">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="description" content="Student OS — professional academic workspace with AI, documents, study tools and PWA support.">
+    <meta name="robots" content="index,follow">
+    <link rel="icon" href="./icon.svg" type="image/svg+xml">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Student OS v12.4 Production Academic Workspace - Dev by Rizky Khoilillu Rochman</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Marked.js for Markdown Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        mono: ['Fira Code', 'JetBrains Mono', 'monospace']
+                    },
+                    borderRadius: {
+                        '4xl': '2rem',
+                        '5xl': '2.5rem'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
+
+        /* Theme Tokens: iOS Midnight Sapphire (Default) */
+        .theme-sapphire {
+            --bg-base: #060913;
+            --bg-card: rgba(15, 23, 42, 0.55);
+            --bg-card-hover: rgba(30, 41, 59, 0.65);
+            --bg-input: rgba(10, 15, 30, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --border-glass-glow: rgba(59, 130, 246, 0.4);
+            --accent-primary: #3b82f6;
+            --accent-secondary: #6366f1;
+            --accent-glow: rgba(59, 130, 246, 0.35);
+            --text-glow: #93c5fd;
+            --blob-1: #1e3a8a;
+            --blob-2: #312e81;
+            --blob-3: #4c1d95;
+        }
+
+        /* Theme Tokens: iOS Emerald Neon */
+        .theme-emerald {
+            --bg-base: #03120e;
+            --bg-card: rgba(6, 38, 28, 0.55);
+            --bg-card-hover: rgba(13, 59, 44, 0.65);
+            --bg-input: rgba(2, 20, 15, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --border-glass-glow: rgba(16, 185, 129, 0.4);
+            --accent-primary: #10b981;
+            --accent-secondary: #06b6d4;
+            --accent-glow: rgba(16, 185, 129, 0.35);
+            --text-glow: #6ee7b7;
+            --blob-1: #064e3b;
+            --blob-2: #115e59;
+            --blob-3: #0284c7;
+        }
+
+        /* Theme Tokens: iOS Pink Amethyst */
+        .theme-amethyst {
+            --bg-base: #14040d;
+            --bg-card: rgba(43, 10, 28, 0.55);
+            --bg-card-hover: rgba(66, 18, 44, 0.65);
+            --bg-input: rgba(22, 4, 15, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --border-glass-glow: rgba(236, 72, 153, 0.4);
+            --accent-primary: #ec4899;
+            --accent-secondary: #f43f5e;
+            --accent-glow: rgba(236, 72, 153, 0.35);
+            --text-glow: #fbcfe8;
+            --blob-1: #831843;
+            --blob-2: #881337;
+            --blob-3: #581c87;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Liquid Background Blobs Animation */
+        .liquid-bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .liquid-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.55;
+            animation: floatBlob 18s ease-in-out infinite alternate;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: var(--blob-1);
+            top: -100px;
+            left: -100px;
+            animation-duration: 22s;
+        }
+
+        .blob-2 {
+            width: 450px;
+            height: 450px;
+            background: var(--blob-2);
+            bottom: -100px;
+            right: -100px;
+            animation-duration: 18s;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 380px;
+            height: 380px;
+            background: var(--blob-3);
+            top: 40%;
+            left: 45%;
+            transform: translate(-50%, -50%);
+            animation-duration: 25s;
+            animation-delay: -10s;
+        }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+            33% { transform: translate(60px, -80px) scale(1.1) rotate(120deg); }
+            66% { transform: translate(-50px, 50px) scale(0.95) rotate(240deg); }
+            100% { transform: translate(0px, 0px) scale(1) rotate(360deg); }
+        }
+
+        /* iOS Glassmorphism Panels */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(28px) saturate(190%);
+            -webkit-backdrop-filter: blur(28px) saturate(190%);
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-panel-hover:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-glass-glow);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.45), 0 0 20px var(--accent-glow);
+        }
+
+        .glass-input {
+            background: var(--bg-input);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            transition: all 0.25s ease;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 15px var(--accent-glow), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-liquid {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            box-shadow: 0 8px 25px var(--accent-glow), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-liquid:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 12px 30px var(--accent-glow), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-liquid:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .text-accent-glow {
+            color: var(--text-glow);
+            text-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+
+        /* Typography & Markdown Rendered Styles */
+        .markdown-body {
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            line-height: 1.7;
+        }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+            color: #ffffff;
+            font-weight: 700;
+            margin-top: 1.25em;
+            margin-bottom: 0.5em;
+        }
+        .markdown-body h1 { font-size: 1.35rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.4rem; }
+        .markdown-body h2 { font-size: 1.15rem; }
+        .markdown-body h3 { font-size: 1.0rem; }
+        .markdown-body p { margin-bottom: 0.85em; }
+        .markdown-body ul, .markdown-body ol { padding-left: 1.4rem; margin-bottom: 0.85em; }
+        .markdown-body ul { list-style-type: disc; }
+        .markdown-body ol { list-style-type: decimal; }
+        .markdown-body blockquote {
+            border-left: 4px solid var(--accent-primary);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.6rem 1rem;
+            border-radius: 0 0.75rem 0.75rem 0;
+            margin-bottom: 0.85em;
+            font-style: italic;
+        }
+        .markdown-body code {
+            font-family: 'Fira Code', monospace;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.375rem;
+            font-size: 0.82em;
+            color: #38bdf8;
+        }
+        .markdown-body pre code {
+            display: block;
+            padding: 0.8rem;
+            overflow-x: auto;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1em;
+        }
+        .markdown-body th, .markdown-body td {
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+        }
+        .markdown-body th { background: rgba(255,255,255,0.05); font-weight: 600; }
+    </style>
+</head>
+<body class="theme-sapphire min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white">
+
+    <div class="liquid-bg-container">
+        <div class="liquid-blob blob-1"></div>
+        <div class="liquid-blob blob-2"></div>
+        <div class="liquid-blob blob-3"></div>
+    </div>
+
+    <header class="sticky top-0 z-40 glass-panel border-b border-white/10 backdrop-blur-2xl">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+            
+            <!-- Brand Identity -->
+            <div class="flex items-center gap-3">
+                <div class="btn-liquid p-2.5 rounded-2xl text-white font-extrabold text-xl shadow-xl flex items-center justify-center w-11 h-11 border border-white/20">
+                    💎
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-black text-base tracking-tight text-white flex items-center gap-1.5">
+                            Student OS <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 font-bold">v12.4</span>
+                        </h1>
+                        <span id="engineBadge" class="text-[10px] px-2.5 py-0.5 rounded-full font-bold text-amber-300 border border-amber-500/40 bg-amber-950/40 flex items-center gap-1.5 cursor-pointer hover:scale-105 transition" onclick="toggleAiMode()" title="Klik untuk beralih mode AI/Offline">
+                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> <span id="engineBadgeText">Gemini 3 Flash AI</span>
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-400">Multi-AI Academic Workspace &bull; Developed by <span class="text-slate-200 font-semibold">Rizky Khoilillu Rochman</span></p>
+                </div>
+            </div>
+
+            <!-- Top Header Controls -->
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <!-- Search Grounding Switcher -->
+                <button id="groundingBtn" onclick="toggleSearchGrounding()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-900/50 transition">
+                    <i class="fa-solid fa-globe text-emerald-400"></i>
+                    <span id="groundingLabel">Google Search: ON</span>
+                </button>
+
+                <!-- Gemini API Key Config -->
+                <button onclick="openApiModal()" class="glass-panel hover:bg-white/10 px-3.5 py-1.5 rounded-xl text-xs text-slate-200 transition font-medium flex items-center gap-1.5 border border-white/10">
+                    <i class="fa-solid fa-key text-amber-400"></i>
+                    <span>API Key</span>
+                </button>
+
+                <!-- Fluid Theme Switcher -->
+                <div class="relative inline-block text-left">
+                    <button onclick="toggleThemeDropdown()" class="glass-panel hover:bg-white/10 px-3.5 py-1.5 rounded-xl text-xs text-slate-200 transition font-medium flex items-center gap-2 border border-white/10">
+                        <span id="themeLabel">💙 Sapphire</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                    </button>
+                    <div id="themeDropdown" class="hidden absolute right-0 mt-2 w-44 glass-panel rounded-2xl py-2 z-50 border border-white/15 shadow-2xl">
+                        <button onclick="setTheme('sapphire')" class="w-full text-left px-4 py-2 text-xs text-slate-200 hover:bg-white/10 flex items-center gap-2">
+                            <span>💙</span> iOS Midnight Sapphire
+                        </button>
+                        <button onclick="setTheme('emerald')" class="w-full text-left px-4 py-2 text-xs text-slate-200 hover:bg-white/10 flex items-center gap-2">
+                            <span>💚</span> iOS Emerald Neon
+                        </button>
+                        <button onclick="setTheme('amethyst')" class="w-full text-left px-4 py-2 text-xs text-slate-200 hover:bg-white/10 flex items-center gap-2">
+                            <span>🩷</span> iOS Pink Amethyst
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <div class="flex-1 flex max-w-7xl w-full mx-auto p-3 md:p-5 gap-5 flex-col md:flex-row">
+
+        <!-- Sidebar Modules -->
+        <aside class="w-full md:w-72 glass-panel rounded-3xl p-3.5 flex flex-col gap-1 shrink-0 md:h-[calc(100vh-6.5rem)] md:sticky md:top-20 overflow-y-auto">
+            
+            <div class="text-[10px] font-extrabold text-slate-400 uppercase px-3 py-1.5 tracking-wider flex justify-between items-center">
+                <span>Modul AI & Generator</span>
+                <span id="aiStatusTag" class="text-[9px] text-amber-300 font-mono px-1.5 py-0.5 rounded bg-amber-950/60 border border-amber-800/60">LIVE AI</span>
+            </div>
+
+            <button onclick="switchTab('skripsi')" id="btn-skripsi" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-graduation-cap text-amber-400 w-4"></i> Skripsi & Bimbingan Suite
+            </button>
+
+            <button onclick="switchTab('research')" id="btn-research" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-globe text-cyan-400 w-4"></i> Web & Literature Research AI
+            </button>
+
+            <button onclick="switchTab('vision')" id="btn-vision" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-camera-retro text-purple-400 w-4"></i> Vision OCR & Foto Soal
+            </button>
+
+            <button onclick="switchTab('humanizer')" id="btn-humanizer" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-feather text-emerald-400 w-4"></i> Academic Rewriter & Style Polisher
+            </button>
+
+            <button onclick="switchTab('makalah')" id="btn-makalah" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-book-bookmark text-blue-400 w-4"></i> Draf Makalah & Esai
+            </button>
+
+            <button onclick="switchTab('essay_ans')" id="btn-essay_ans" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-pen-to-square text-rose-400 w-4"></i> Jawaban Essay PEEL Method
+            </button>
+
+            <button onclick="switchTab('translate')" id="btn-translate" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-language text-indigo-400 w-4"></i> Translator Akademik
+            </button>
+
+            <button onclick="switchTab('ppt')" id="btn-ppt" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-file-powerpoint text-orange-400 w-4"></i> Slide Presentasi (PPT) Deck
+            </button>
+
+            <button onclick="switchTab('dosen')" id="btn-dosen" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-comment-dots text-pink-400 w-4"></i> Chat & Email Dosen Formal
+            </button>
+
+            <button onclick="switchTab('ringkasan')" id="btn-ringkasan" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-align-left text-teal-400 w-4"></i> Ringkas Jurnal Eksekutif
+            </button>
+
+            <div class="text-[10px] font-extrabold text-slate-400 uppercase px-3 pt-3 py-1.5 tracking-wider border-t border-white/10 mt-2">
+                Tools Mahasiswa Interaktif
+            </div>
+
+            <button onclick="switchTab('gpa')" id="btn-gpa" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-calculator text-yellow-400 w-4"></i> IPK & GPA Estimator Target
+            </button>
+
+            <button onclick="switchTab('pomodoro')" id="btn-pomodoro" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-stopwatch text-rose-400 w-4"></i> Pomodoro Focus Timer
+            </button>
+
+            <button onclick="switchTab('tasks')" id="btn-tasks" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-list-check text-emerald-400 w-4"></i> Task & Deadline Manager
+            </button>
+
+            <button onclick="switchTab('math')" id="btn-math" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-square-root-variable text-purple-400 w-4"></i> Scientific Calculator
+            </button>
+
+            <button onclick="switchTab('jadwal')" id="btn-jadwal" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-calendar-days text-indigo-400 w-4"></i> Jadwal Kuliah Tracker
+            </button>
+
+            <button onclick="switchTab('gacha')" id="btn-gacha" class="nav-btn flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-slate-300 hover:bg-white/10 transition text-left">
+                <i class="fa-solid fa-dharmachakra text-pink-400 w-4"></i> Wheel Spin Undian Kelompok
+            </button>
+
+            <div class="mt-auto pt-3 border-t border-white/10 text-center">
+                <p class="text-[10px] text-slate-400">Student OS v12.4 Production Academic Workspace</p>
+                <p class="text-[10px] text-slate-200 font-bold">Dev: Rizky Khoilillu Rochman</p>
+            </div>
+        </aside>
+
+        <!-- Dynamic Main Workspace Panel -->
+        <main class="flex-1 glass-panel rounded-3xl p-4 md:p-6 flex flex-col min-h-[calc(100vh-6.5rem)] overflow-y-auto">
+
+            <div id="standardView" class="space-y-4">
+                <div id="tabHeader" class="flex justify-between items-start flex-wrap gap-2 border-b border-white/10 pb-3">
+                    <div>
+                        <h2 id="tabTitle" class="text-lg font-bold text-white tracking-tight">Judul Modul</h2>
+                        <p id="tabDesc" class="text-xs text-slate-400">Deskripsi modul akademik.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="aiIndicator" class="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-amber-950/60 border border-amber-500/30 text-amber-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-brain"></i> Engine: Gemini 3 Flash AI
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Inputs Render Target -->
+                <div id="dynamicInputs" class="space-y-4 pt-1"></div>
+
+                <button onclick="executeAction()" id="submitBtn" class="w-full btn-liquid text-white font-bold py-3.5 rounded-2xl transition flex items-center justify-center gap-2 text-xs shadow-2xl tracking-wide border border-white/20">
+                    <i class="fa-solid fa-bolt" id="submitBtnIcon"></i> <span id="submitBtnText">Generate Sekarang dengan Gemini AI</span>
+                </button>
+
+                <!-- Loading Animation -->
+                <div id="loadingBox" class="hidden p-6 glass-panel rounded-2xl border border-amber-500/30 text-center space-y-3">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-3 border-amber-400 border-t-transparent"></div>
+                    <p class="text-xs font-bold text-amber-300" id="loadingMessage">Gemini AI sedang menyusun & menganalisis riset akademik...</p>
+                </div>
+
+                <!-- Output Area with Markdown Render & Exporting -->
+                <div id="outputSection" class="hidden mt-6 pt-5 border-t border-white/10 flex-1 flex flex-col space-y-3">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <h3 class="text-xs font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-emerald-400"></i> Hasil Sintesis Akademik:
+                        </h3>
+
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <!-- Toggle Raw vs Rendered -->
+                            <button onclick="toggleMarkdownView()" id="toggleViewBtn" class="glass-panel hover:bg-white/10 text-xs px-2.5 py-1.5 rounded-xl border border-white/10 text-slate-300 transition flex items-center gap-1">
+                                <i class="fa-solid fa-eye"></i> <span id="toggleViewText">View Raw</span>
+                            </button>
+
+                            <!-- Audio TTS Button -->
+                            <button onclick="speakOutputText()" id="ttsBtn" class="bg-purple-950/60 hover:bg-purple-900/80 text-purple-200 border border-purple-500/40 text-xs px-2.5 py-1.5 rounded-xl transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-volume-high text-purple-300" id="ttsIcon"></i> <span id="ttsBtnText">Suara AI</span>
+                            </button>
+
+                            <!-- Copy Button -->
+                            <button onclick="copyOutputText()" class="glass-panel hover:bg-white/10 text-slate-200 text-xs px-2.5 py-1.5 rounded-xl border border-white/10 transition flex items-center gap-1">
+                                <i class="fa-regular fa-copy"></i> Salin
+                            </button>
+
+                            <!-- Export Dropdown -->
+                            <div class="relative inline-block text-left">
+                                <button onclick="toggleExportMenu()" class="glass-panel hover:bg-white/10 text-slate-200 text-xs px-2.5 py-1.5 rounded-xl border border-white/10 transition flex items-center gap-1">
+                                    <i class="fa-solid fa-download text-cyan-400"></i> Export <i class="fa-solid fa-chevron-down text-[9px]"></i>
+                                </button>
+                                <div id="exportMenu" class="hidden absolute right-0 mt-2 w-32 glass-panel rounded-2xl py-2 z-50 border border-white/15 shadow-2xl">
+                                    <button onclick="exportOutput('txt')" class="w-full text-left px-3 py-1.5 text-xs text-slate-200 hover:bg-white/10">.TXT (Plain)</button>
+                                    <button onclick="exportOutput('md')" class="w-full text-left px-3 py-1.5 text-xs text-slate-200 hover:bg-white/10">.MD (Markdown)</button>
+                                    <button onclick="exportOutput('doc')" class="w-full text-left px-3 py-1.5 text-xs text-slate-200 hover:bg-white/10">.DOC (Word)</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grounded Web Sources -->
+                    <div id="sourcesBox" class="hidden p-3.5 rounded-2xl glass-panel border border-cyan-500/30 text-xs space-y-1">
+                        <span class="font-bold text-cyan-300 block mb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-link"></i> Sumber Referensi Terverifikasi (Google Grounding):
+                        </span>
+                        <ul id="sourcesList" class="list-disc list-inside text-slate-300 space-y-1 text-[11px]"></ul>
+                    </div>
+
+                    <!-- Formatted Markdown Render View -->
+                    <div id="outputRendered" class="w-full flex-1 glass-input rounded-2xl p-5 overflow-y-auto markdown-body min-h-[380px]"></div>
+
+                    <!-- Raw Textarea View (Hidden by default) -->
+                    <textarea id="outputText" readonly class="hidden w-full flex-1 glass-input rounded-2xl p-4 text-xs text-slate-200 font-mono leading-relaxed resize-none focus:outline-none min-h-[380px]"></textarea>
+                </div>
+            </div>
+
+            <div id="gpaWidget" class="hidden space-y-5">
+                <div class="border-b border-white/10 pb-3">
+                    <h2 class="text-lg font-bold text-white">IPK & GPA Target Estimator</h2>
+                    <p class="text-xs text-slate-400">Kalkulator Indeks Prestasi Semester (IPS), IP Kumulatif (IPK), serta Estimasi Rekomendasi Target SKS.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <!-- Input Course List -->
+                    <div class="lg:col-span-2 glass-panel p-4 rounded-2xl border border-white/10 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-book text-amber-400"></i> Daftar Mata Kuliah Semester Ini</h3>
+                            <button onclick="addGpaCourseRow()" class="btn-liquid px-3 py-1.5 rounded-xl text-xs text-white font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Tambah Matkul
+                            </button>
+                        </div>
+
+                        <div id="gpaCourseList" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
+                    </div>
+
+                    <!-- Summary & Target Calculator -->
+                    <div class="glass-panel p-4 rounded-2xl border border-white/10 space-y-4">
+                        <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-bullseye text-cyan-400"></i> Ringkasan & Target IPK</h3>
+
+                        <div class="bg-black/30 p-3 rounded-xl border border-white/10 space-y-1 text-center">
+                            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Estimasi IPS Semester Ini</span>
+                            <div id="ipsDisplay" class="text-3xl font-black text-emerald-400">0.00</div>
+                        </div>
+
+                        <div class="space-y-2 border-t border-white/10 pt-3">
+                            <label class="block text-[11px] font-semibold text-slate-300">IPK Kumulatif Lalu</label>
+                            <input type="number" step="0.01" id="gpaPrevIpk" placeholder="Contoh: 3.45" oninput="calculateGpaOverall()" class="w-full glass-input rounded-xl px-3 py-2 text-xs text-white">
+
+                            <label class="block text-[11px] font-semibold text-slate-300">Total SKS Lulus Lalu</label>
+                            <input type="number" id="gpaPrevSks" placeholder="Contoh: 60" oninput="calculateGpaOverall()" class="w-full glass-input rounded-xl px-3 py-2 text-xs text-white">
+
+                            <label class="block text-[11px] font-semibold text-slate-300">Target IPK Akhir Kumulatif</label>
+                            <input type="number" step="0.01" id="gpaTargetIpk" placeholder="Contoh: 3.75" oninput="calculateGpaOverall()" class="w-full glass-input rounded-xl px-3 py-2 text-xs text-white">
+                        </div>
+
+                        <div class="bg-blue-950/40 p-3 rounded-xl border border-blue-500/30 text-xs text-slate-300 space-y-1">
+                            <span class="font-bold text-blue-300 block"><i class="fa-solid fa-circle-info"></i> Rekomendasi Target:</span>
+                            <div id="gpaTargetAdvice" class="text-[11px] leading-relaxed text-slate-300">Masukkan nilai IPK & target untuk melihat kalkulasi.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pomodoroWidget" class="hidden space-y-5">
+                <div class="border-b border-white/10 pb-3">
+                    <h2 class="text-lg font-bold text-white">Pomodoro Focus Study Timer</h2>
+                    <p class="text-xs text-slate-400">Timer interval fokus belajar dengan audio visualizer ring & chimes synth.</p>
+                </div>
+
+                <div class="max-w-md mx-auto glass-panel p-6 rounded-3xl border border-white/10 text-center space-y-5">
+                    
+                    <!-- Mode Selector -->
+                    <div class="flex justify-center gap-2 p-1 glass-input rounded-2xl">
+                        <button onclick="setPomoMode('work')" id="pomoBtnWork" class="flex-1 py-2 text-xs rounded-xl font-bold bg-white/20 text-white transition">Focus (25m)</button>
+                        <button onclick="setPomoMode('short')" id="pomoBtnShort" class="flex-1 py-2 text-xs rounded-xl font-medium text-slate-400 hover:text-white transition">Short Break (5m)</button>
+                        <button onclick="setPomoMode('long')" id="pomoBtnLong" class="flex-1 py-2 text-xs rounded-xl font-medium text-slate-400 hover:text-white transition">Long Break (15m)</button>
+                    </div>
+
+                    <!-- Liquid Timer Ring -->
+                    <div class="relative w-60 h-60 mx-auto flex items-center justify-center">
+                        <canvas id="pomoCanvas" width="240" height="240" class="w-60 h-60"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="pomoTimerText" class="text-4xl font-black font-mono tracking-tight text-white">25:00</span>
+                            <span id="pomoStateText" class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Sesi Belajar</span>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex items-center justify-center gap-3">
+                        <button onclick="togglePomoTimer()" id="pomoPlayBtn" class="btn-liquid px-8 py-3 rounded-2xl text-xs font-extrabold text-white flex items-center gap-2 shadow-xl">
+                            <i class="fa-solid fa-play" id="pomoPlayIcon"></i> <span id="pomoPlayText">Mulai Fokus</span>
+                        </button>
+                        <button onclick="resetPomoTimer()" class="glass-panel hover:bg-white/10 p-3 rounded-2xl text-slate-300 text-xs border border-white/10 transition" title="Reset Timer">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- Session Stats -->
+                    <div class="text-[11px] text-slate-400 pt-2 border-t border-white/10 flex justify-around">
+                        <span>Sesi Selesai: <strong id="pomoCountText" class="text-white">0</strong></span>
+                        <span>Total Waktu: <strong id="pomoTotalTimeText" class="text-white">0 menit</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tasksWidget" class="hidden space-y-5">
+                <div class="flex justify-between items-center border-b border-white/10 pb-3 flex-wrap gap-2">
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Task & Deadline Manager</h2>
+                        <p class="text-xs text-slate-400">Kelola tugas kuliah, kuis, UTS/UAS, dan target skripsi dengan prioritas.</p>
+                    </div>
+                    <button onclick="openAddTaskModal()" class="btn-liquid px-4 py-2 rounded-2xl text-xs font-bold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> Tambah Tugas
+                    </button>
+                </div>
+
+                <!-- Filter Row -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                    <button onclick="filterTasks('all')" class="task-filter-btn active-filter px-3 py-1.5 rounded-xl text-xs font-bold bg-white/20 text-white border border-white/20">Semua</button>
+                    <button onclick="filterTasks('pending')" class="task-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white glass-panel">Belum Selesai</button>
+                    <button onclick="filterTasks('completed')" class="task-filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white glass-panel">Selesai</button>
+                </div>
+
+                <div id="taskList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+            </div>
+
+            <div id="mathCalcWidget" class="hidden space-y-5">
+                <div class="border-b border-white/10 pb-3">
+                    <h2 class="text-lg font-bold text-white">Scientific Calculator Visual</h2>
+                    <p class="text-xs text-slate-400">Kalkulator ilmiah interaktif dengan fungsi trigonometri, logaritma, dan eksponensial.</p>
+                </div>
+
+                <div class="max-w-md mx-auto glass-panel p-5 rounded-3xl border border-white/10 shadow-2xl">
+                    <input type="text" id="calcDisplay" readonly class="w-full bg-black/50 border border-white/10 text-right text-2xl font-mono px-4 py-3 rounded-2xl text-emerald-400 mb-4 tracking-wider focus:outline-none shadow-inner" value="0">
+                    
+                    <div class="grid grid-cols-5 gap-1.5 text-xs font-bold mb-2">
+                        <button onclick="calcFunc('sin')" class="p-2.5 glass-panel hover:bg-white/15 text-cyan-300 rounded-xl">sin</button>
+                        <button onclick="calcFunc('cos')" class="p-2.5 glass-panel hover:bg-white/15 text-cyan-300 rounded-xl">cos</button>
+                        <button onclick="calcFunc('tan')" class="p-2.5 glass-panel hover:bg-white/15 text-cyan-300 rounded-xl">tan</button>
+                        <button onclick="calcFunc('log')" class="p-2.5 glass-panel hover:bg-white/15 text-cyan-300 rounded-xl">log</button>
+                        <button onclick="calcFunc('ln')" class="p-2.5 glass-panel hover:bg-white/15 text-cyan-300 rounded-xl">ln</button>
+
+                        <button onclick="calcFunc('sqrt')" class="p-2.5 glass-panel hover:bg-white/15 text-cyan-300 rounded-xl">√</button>
+                        <button onclick="calcFunc('pow')" class="p-2.5 glass-panel hover:bg-white/15 text-cyan-300 rounded-xl">x²</button>
+                        <button onclick="calcInput('**')" class="p-2.5 glass-panel hover:bg-white/15 text-cyan-300 rounded-xl">x^y</button>
+                        <button onclick="calcInput('(')" class="p-2.5 glass-panel hover:bg-white/15 text-slate-300 rounded-xl">(</button>
+                        <button onclick="calcInput(')')" class="p-2.5 glass-panel hover:bg-white/15 text-slate-300 rounded-xl">)</button>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2 text-sm font-bold">
+                        <button onclick="calcInput('C')" class="p-3 bg-rose-950/60 hover:bg-rose-900 text-rose-300 rounded-xl border border-rose-800/60">C</button>
+                        <button onclick="calcBackspace()" class="p-3 glass-panel hover:bg-white/15 text-slate-200 rounded-xl">⌫</button>
+                        <button onclick="calcInput('%')" class="p-3 glass-panel hover:bg-white/15 text-slate-200 rounded-xl">%</button>
+                        <button onclick="calcInput('/')" class="p-3 bg-blue-600/80 hover:bg-blue-500 text-white rounded-xl">÷</button>
+                        
+                        <button onclick="calcInput('7')" class="p-3 glass-panel hover:bg-white/15 text-white rounded-xl">7</button>
+                        <button onclick="calcInput('8')" class="p-3 glass-panel hover:bg-white/15 text-white rounded-xl">8</button>
+                        <button onclick="calcInput('9')" class="p-3 glass-panel hover:bg-white/15 text-white rounded-xl">9</button>
+                        <button onclick="calcInput('*')" class="p-3 bg-blue-600/80 hover:bg-blue-500 text-white rounded-xl">×</button>
+
+                        <button onclick="calcInput('4')" class="p-3 glass-panel hover:bg-white/15 text-white rounded-xl">4</button>
+                        <button onclick="calcInput('5')" class="p-3 glass-panel hover:bg-white/15 text-white rounded-xl">5</button>
+                        <button onclick="calcInput('6')" class="p-3 glass-panel hover:bg-white/15 text-white rounded-xl">6</button>
+                        <button onclick="calcInput('-')" class="p-3 bg-blue-600/80 hover:bg-blue-500 text-white rounded-xl">-</button>
+
+                        <button onclick="calcInput('1')" class="p-3 glass-panel hover:bg-white/15 text-white rounded-xl">1</button>
+                        <button onclick="calcInput('2')" class="p-3 glass-panel hover:bg-white/15 text-white rounded-xl">2</button>
+                        <button onclick="calcInput('3')" class="p-3 glass-panel hover:bg-white/15 text-white rounded-xl">3</button>
+                        <button onclick="calcInput('+')" class="p-3 bg-blue-600/80 hover:bg-blue-500 text-white rounded-xl">+</button>
+
+                        <button onclick="calcInput('0')" class="p-3 glass-panel hover:bg-white/15 text-white rounded-xl col-span-2">0</button>
+                        <button onclick="calcInput('.')" class="p-3 glass-panel hover:bg-white/15 text-white rounded-xl">.</button>
+                        <button onclick="calcEqual()" class="p-3 btn-liquid text-white rounded-xl font-extrabold">=</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="jadwalWidget" class="hidden space-y-4">
+                <div class="flex items-center justify-between border-b border-white/10 pb-3 flex-wrap gap-2">
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Jadwal Kuliah Tracker</h2>
+                        <p class="text-xs text-slate-400">Kelola daftar matkul mingguan dan lokasi ruangan.</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-4 rounded-2xl border border-white/10 grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <input type="text" id="jMatkul" placeholder="Nama Mata Kuliah" class="glass-input px-3 py-2 text-xs rounded-xl text-white">
+                    <select id="jHari" class="glass-input px-3 py-2 text-xs rounded-xl text-white bg-slate-900">
+                        <option value="Senin">Senin</option>
+                        <option value="Selasa">Selasa</option>
+                        <option value="Rabu">Rabu</option>
+                        <option value="Kamis">Kamis</option>
+                        <option value="Jumat">Jumat</option>
+                        <option value="Sabtu">Sabtu</option>
+                    </select>
+                    <div class="flex gap-2">
+                        <input type="time" id="jJamMulai" class="flex-1 glass-input px-2 py-2 text-xs rounded-xl text-white">
+                        <span class="self-center text-xs text-slate-400">s/d</span>
+                        <input type="time" id="jJamSelesai" class="flex-1 glass-input px-2 py-2 text-xs rounded-xl text-white">
+                    </div>
+                    <input type="text" id="jRuang" placeholder="Ruangan (Contoh: R.302 / Lab)" class="glass-input px-3 py-2 text-xs rounded-xl text-white">
+                    <input type="text" id="jDosen" placeholder="Nama Dosen Pengampu" class="glass-input px-3 py-2 text-xs rounded-xl text-white">
+                    <button onclick="addJadwal()" class="btn-liquid text-white font-semibold py-2 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> Tambah Jadwal
+                    </button>
+                </div>
+
+                <div id="jadwalList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2"></div>
+            </div>
+
+            <div id="gachaWidget" class="hidden space-y-4">
+                <div class="border-b border-white/10 pb-3">
+                    <h2 class="text-lg font-bold text-white">Wheel Spin Undian Kelompok</h2>
+                    <p class="text-xs text-slate-400">Roda acak visual High-DPI untuk pembagian urutan presentasi.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+                    <div class="space-y-3">
+                        <label class="block text-xs font-bold text-slate-300">Daftar Opsi / Nama Kelompok (1 Per Baris)</label>
+                        <textarea id="wheelInput" rows="7" class="w-full glass-input rounded-2xl p-3 text-xs text-white focus:outline-none resize-none">Kelompok 1 - Rizky
+Kelompok 2 - Ahmad
+Kelompok 3 - Anisa
+Kelompok 4 - Budi
+Kelompok 5 - Siti</textarea>
+                        <button onclick="drawWheel()" class="w-full glass-panel hover:bg-white/10 border border-white/10 text-white text-xs font-semibold py-2.5 rounded-xl transition">
+                            <i class="fa-solid fa-rotate"></i> Update Tampilan Roda
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center p-5 glass-panel rounded-3xl border border-white/10 shadow-2xl">
+                        <div class="relative flex items-center justify-center">
+                            <div class="absolute -top-3 z-10 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-[18px] border-t-rose-500 drop-shadow-md"></div>
+                            <canvas id="wheelCanvas" width="300" height="300" class="rounded-full shadow-2xl"></canvas>
+                        </div>
+
+                        <button onclick="spinWheel()" id="spinBtn" class="mt-5 btn-liquid text-white font-bold py-3 px-10 rounded-full text-xs shadow-xl transition transform active:scale-95 flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i> Putar Roda Undian!
+                        </button>
+
+                        <div id="wheelWinner" class="mt-4 text-center text-sm font-extrabold text-emerald-300 min-h-[24px]"></div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- API Settings Modal -->
+    <div id="apiModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-xl flex items-center justify-center p-4">
+        <div class="glass-panel p-6 rounded-3xl max-w-md w-full border border-white/15 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-key text-amber-400"></i> Pengaturan Gemini API Key
+                </h3>
+                <button onclick="closeApiModal()" class="text-slate-400 hover:text-white text-sm">✕</button>
+            </div>
+            
+            <p class="text-xs text-slate-300 leading-relaxed">
+                By default, Student OS v10.0 menggunakan fitur Runtime API Key Injection. Jika ingin menggunakan Google Gemini Key sendiri, masukkan di bawah ini:
+            </p>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Custom Gemini API Key</label>
+                <input type="password" id="userApiKeyInput" placeholder="AIzaSy..." class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none">
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="saveApiKey()" class="btn-liquid px-4 py-2 rounded-xl text-xs font-semibold text-white">Simpan Key</button>
+                <button onclick="closeApiModal()" class="glass-panel hover:bg-white/10 px-4 py-2 rounded-xl text-xs text-slate-300">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-xl flex items-center justify-center p-4">
+        <div class="glass-panel p-6 rounded-3xl max-w-md w-full border border-white/15 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-emerald-400"></i> Tambah Tugas Baru
+                </h3>
+                <button onclick="closeAddTaskModal()" class="text-slate-400 hover:text-white text-sm">✕</button>
+            </div>
+
+            <div class="space-y-3">
+                <input type="text" id="taskTitleInput" placeholder="Judul Tugas / Ringkasan Soal" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs text-white">
+                <input type="text" id="taskCourseInput" placeholder="Mata Kuliah" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs text-white">
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="taskPriorityInput" class="glass-input rounded-xl px-3 py-2 text-xs text-white bg-slate-900">
+                        <option value="high">Prioritas Tinggi</option>
+                        <option value="medium" selected>Prioritas Sedang</option>
+                        <option value="low">Prioritas Rendah</option>
+                    </select>
+                    <select id="taskCategoryInput" class="glass-input rounded-xl px-3 py-2 text-xs text-white bg-slate-900">
+                        <option value="Tugas">Tugas</option>
+                        <option value="Kuis">Kuis</option>
+                        <option value="UTS/UAS">UTS/UAS</option>
+                        <option value="Skripsi">Skripsi</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] text-slate-400 mb-1">Deadline Tanggal & Waktu</label>
+                    <input type="datetime-local" id="taskDueDateInput" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs text-white">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="saveNewTask()" class="btn-liquid px-4 py-2 rounded-xl text-xs font-semibold text-white">Simpan Tugas</button>
+                <button onclick="closeAddTaskModal()" class="glass-panel hover:bg-white/10 px-4 py-2 rounded-xl text-xs text-slate-300">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 glass-panel border border-emerald-500/40 text-slate-100 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toastMessage" class="text-xs font-semibold">Pesan Notifikasi</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-4 text-center text-xs text-slate-400">
+        Student OS v12.4 Production Academic Workspace &copy; 2026 — Designed & Built by <span class="text-slate-100 font-bold">Rizky Khoilillu Rochman</span>
+    </footer>
+
+    <script>
+        // MEMORY & STORAGE UTILITY
+        const memoryStore = {};
+        function safeGetStorage(key) {
+            try { return localStorage.getItem(key); } catch (e) { return memoryStore[key] || null; }
+        }
+        function safeSetStorage(key, value) {
+            try { localStorage.setItem(key, value); } catch (e) { memoryStore[key] = value; }
+        }
+
+        // APP GLOBAL STATE
+        let currentTab = 'skripsi';
+        let currentTheme = 'sapphire';
+        let isAiMode = true;
+        let isSearchGrounding = true;
+        let uploadedBase64Image = null;
+        let activeTaskFilter = 'all';
+
+        // GEMINI API CALLER WITH EXPONENTIAL BACKOFF
+        async function callGeminiAPI(payload, model = 'gemini-3-flash-preview', retries = 3) {
+            const userKey = safeGetStorage('user_gemini_api_key') || "";
+            const apiKey = userKey.trim();
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+            let delay = 1000;
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.status === 429 && i < retries - 1) {
+                        await new Promise(r => setTimeout(r, delay));
+                        delay *= 2;
+                        continue;
+                    }
+
+                    if (!response.ok) {
+                        const errJson = await response.json().catch(() => ({}));
+                        throw new Error(errJson.error?.message || `HTTP Error ${response.status}`);
+                    }
+
+                    return await response.json();
+                } catch (err) {
+                    if (i === retries - 1) throw err;
+                    await new Promise(r => setTimeout(r, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        // ACADEMIC MODULE CONFIGURATIONS
+        const tabConfigs = {
+            skripsi: {
+                title: 'Khusus Skripsi & Bimbingan Suite',
+                desc: 'Generate usulan 3 judul skripsi ilmiah, Latar Belakang deduktif, Rumusan Masalah, Metodologi, dan Referensi APA.',
+                inputs: [
+                    { id: 'jurusan', label: 'Program Studi / Jurusan', placeholder: 'Contoh: S1 Teknik Informatika / S1 Manajemen', type: 'text' },
+                    { id: 'topikSkripsi', label: 'Topik Minat / Judul Tentatif', placeholder: 'Contoh: Machine Learning untuk Prediksi Kelulusan Mahasiswa', type: 'text' },
+                    { id: 'detailBimbingan', label: 'Fokus Permasalahan / Instruksi Khusus', placeholder: 'Sertakan fenomena digital, metode kuantitatif, dan rumusan masalah...', type: 'textarea' }
+                ],
+                sysPrompt: "Anda adalah dosen pembimbing senior & konsultan skripsi perguruan tinggi Indonesia. Hasilkan draf usulan skripsi yang komprehensif, akademis baku, dan terstruktur sesuai standar skripsi Indonesia.",
+                offlineGenerator: (data) => `# DRAF USULAN SKRIPSI (OFFLINE ENGINE)\n\n**Program Studi:** ${data.jurusan || 'Umum'}\n**Topik:** ${data.topikSkripsi || 'Pengembangan Sistem'}\n\n## 1. Usulan 3 Judul Skripsi\n1. "Analisis dan Implementasi ${data.topikSkripsi} Berbasis Framework Terintegrasi"\n2. "Evaluasi Komparatif Metode Empiris pada ${data.topikSkripsi}"\n3. "Optimasi Model Usulan ${data.topikSkripsi} pada Program Studi ${data.jurusan}"\n\n## 2. Latar Belakang Masalah\nPerkembangan pesat pada bidang ${data.jurusan} menuntut penyesuaian metodologi. Fenomena di lapangan menunjukkan kendala operasional yang perlu diselesaikan secara ilmiah.\n\n## 3. Rumusan Masalah\n1. Bagaimana kinerja sistem ${data.topikSkripsi}?\n2. Faktor apa yang mempengaruhi efisiensi model?`
+            },
+            research: {
+                title: 'Web & Literature Research AI (Google Grounded)',
+                desc: 'Pencarian literatur ilmiah berbasis internet real-time dengan daftar sumber sitasi terverifikasi.',
+                inputs: [
+                    { id: 'queryResearch', label: 'Kata Kunci Topik Research / Jurnal', placeholder: 'Contoh: Perkembangan AI Agentic Workflow di pendidikan 2026', type: 'text' },
+                    { id: 'detailResearch', label: 'Spesifikasi Informasi yang Dicari', placeholder: 'Cari statistik terbaru, nama peneliti utama, dan kesimpulan temuan...', type: 'textarea' }
+                ],
+                sysPrompt: "Anda adalah peneliti ilmiah senior. Lakukan riset berbasis data faktual dari web dan berikan ringkasan akademik komprehensif.",
+                offlineGenerator: (data) => `Pencarian Web Research Grounded membutuhkan koneksi AI Gemini. Silakan aktifkan Mode Gemini AI.`
+            },
+            vision: {
+                title: 'Vision OCR & Foto Soal (Multimodal AI)',
+                desc: 'Unggah foto lembar soal, rumus matematika, atau catatan buku untuk dianalisis oleh Gemini Vision.',
+                inputs: [
+                    { id: 'imageFile', label: 'Foto Soal / Catatan (PNG/JPG)', type: 'file' },
+                    { id: 'visionPrompt', label: 'Instruksi Pengerjaan', placeholder: 'Selesaikan soal pada gambar di atas dan jelaskan langkah demi langkah...', type: 'textarea' }
+                ],
+                sysPrompt: "Anda adalah pakar pemecah soal dan analisis dokumen visual. Selesaikan soal atau jelaskan isi foto secara rinci.",
+                offlineGenerator: (data) => `Fitur Multimodal Vision OCR membutuhkan model Gemini AI.`
+            },
+            humanizer: {
+                title: 'Academic Rewriter & Style Polisher',
+                desc: 'Memoles draf agar lebih natural, jelas, konsisten, dan sesuai gaya akademik tanpa menjanjikan hasil deteksi tertentu.',
+                inputs: [
+                    { id: 'teksAsli', label: 'Draf Teks / Paragraf Asli', placeholder: 'Tempelkan paragraf draf yang ingin dipoles di sini...', type: 'textarea' },
+                    { id: 'gayaStyle', label: 'Target Gaya Paraphrasing', placeholder: 'Contoh: Akademik Alami, Formal Humanis, Variasi Kalimat Kompleks', type: 'text' }
+                ],
+                sysPrompt: "Ubah draf teks input menjadi penulisan manusia organik yang alami. Eliminasi semua kata klise khas AI seperti 'Penting untuk diingat', 'Secara keseluruhan', 'Dalam era digital saat ini', 'Tidak hanya... tetapi juga'. Gunakan struktur kalimat asimetris yang mengalir dan ritme tanda baca dinamis.",
+                offlineGenerator: (data) => `# HASIL PARAPHRASE HUMANIZER (OFFLINE)\n\n${data.teksAsli ? data.teksAsli.replace(/penting untuk diingat/gi, 'perlu dicatat bahwa').replace(/secara keseluruhan/gi, 'ringkasnya') : 'Teks belum dimasukkan.'}`
+            },
+            makalah: {
+                title: 'Draf Makalah & Esai Akademik',
+                desc: 'Generate kerangka dan draf pembahasan makalah Bab I - III lengkap dengan daftar pustaka.',
+                inputs: [
+                    { id: 'topik', label: 'Topik / Judul Makalah', placeholder: 'Contoh: Etika Kecerdasan Buatan dalam Akademik', type: 'text' },
+                    { id: 'matkul', label: 'Mata Kuliah', placeholder: 'Contoh: Etika Profesi / Metodologi Riset', type: 'text' },
+                    { id: 'detail', label: 'Poin Utama Pembahasan', placeholder: 'Sertakan analisis tantangan, dampak sosial, dan solusi...', type: 'textarea' }
+                ],
+                sysPrompt: "Susun draf makalah akademik komprehensif (Pendahuluan, Pembahasan, Penutup, Daftar Pustaka) berbasis standar kampus.",
+                offlineGenerator: (data) => `# DRAF MAKALAH (OFFLINE)\n\n## Judul: ${data.topik || 'Topik Penelitian'}\n**Mata Kuliah:** ${data.matkul || 'Umum'}\n\n### BAB I PENDAHULUAN\nPembahasan mengenai ${data.topik} menjadi krusial dalam lingkup ${data.matkul}...\n\n### BAB II PEMBAHASAN\n${data.detail || 'Pembahasan teoritis'}`
+            },
+            essay_ans: {
+                title: 'Jawaban Soal Essay (PEEL Method)',
+                desc: 'Generate formulasi jawaban esai ujian berbobot menggunakan struktur PEEL (Point, Explanation, Example, Link).',
+                inputs: [
+                    { id: 'soalUjian', label: 'Pertanyaan / Soal Ujian Esai', placeholder: 'Tempelkan pertanyaan soal esai di sini...', type: 'textarea' },
+                    { id: 'panjangJwb', label: 'Gaya & Kedalaman Jawaban', placeholder: 'Lengkap dengan contoh empiris / Singkat padat', type: 'text' }
+                ],
+                sysPrompt: "Jawab soal esai ujian secara tajam dan terstruktur menggunakan formulasi PEEL (Point, Explanation, Example, Link).",
+                offlineGenerator: (data) => `# JAWABAN ESSAY PEEL METHOD (OFFLINE)\n\n**Point:** Jawaban utama atas pertanyaan berfokus pada analisis variabel utama.\n**Explanation:** Secara teoritis, variabel ini saling mempengaruhi.\n**Example:** Contoh empiris dapat ditemukan pada implementasi lapangan.\n**Link:** Hal ini membuktikan keterkaitan langsung dengan fenomena tersebut.`
+            },
+            translate: {
+                title: 'Translator Akademik (Indo ↔ Academic English)',
+                desc: 'Ubah teks informal / draf kasar menjadi Bahasa Indonesia Formal Akademik Baku dan Academic English.',
+                inputs: [
+                    { id: 'teksAwal', label: 'Teks / Abstrak Input', placeholder: 'Paste kalimat atau draf abstrak di sini...', type: 'textarea' }
+                ],
+                sysPrompt: "Ubah teks input menjadi dua versi: 1) Bahasa Indonesia Formal Akademik Baku, 2) Academic English standar jurnal internasional.",
+                offlineGenerator: (data) => `# TRANSLATION RESULT (OFFLINE)\n\n### Versi Indonesia Formal Akademik:\n${data.teksAwal}\n\n### Academic English Version:\nBased on theoretical synthesis, this paper examines the primary variables...`
+            },
+            ppt: {
+                title: 'Slide Presentasi (PPT) Deck Builder',
+                desc: 'Generate outline slide PowerPoint per slide lengkap dengan poin ringkas dan Speaker Notes.',
+                inputs: [
+                    { id: 'topik', label: 'Topik Materi Presentasi', placeholder: 'Contoh: Strategi Digital Marketing UMKM', type: 'text' },
+                    { id: 'slideCount', label: 'Jumlah Slide', placeholder: 'Contoh: 5 Slide', type: 'text' },
+                    { id: 'detail', label: 'Poin Kunci Utama', placeholder: 'Definisi, Keunggulan, Langkah Kerja, Kesimpulan', type: 'textarea' }
+                ],
+                sysPrompt: "Buatkan outline slide PowerPoint terstruktur per slide lengkap dengan Speaker Notes untuk presentasi.",
+                offlineGenerator: (data) => `# SLIDE PRESENTASI DECK (OFFLINE)\n\n## Slide 1: Judul Presentasi\n- **Topik:** ${data.topik}\n- *Speaker Notes:* Sampaikan salam pambuka dan pengenalan topik.`
+            },
+            dosen: {
+                title: 'Chat & Email Dosen Formal',
+                desc: 'Generate draft pesan WhatsApp & Email super sopan sesuai etika komunikasi kampus.',
+                inputs: [
+                    { id: 'namaDosen', label: 'Nama Lengkap & Gelar Dosen', placeholder: 'Contoh: Dr. Ir. Budi Santoso, M.T.', type: 'text' },
+                    { id: 'tujuan', label: 'Tujuan Pesan', placeholder: 'Contoh: Bimbingan Skripsi Bab 2 / Susulan Kuis', type: 'text' },
+                    { id: 'detailInfo', label: 'Identitas Diri & Waktu', placeholder: 'Nama: Rizky, NIM: 12345, Kelas A', type: 'textarea' }
+                ],
+                sysPrompt: "Buatkan dua versi pesan komunikasi dosen yang sangat sopan dan beretika (Versi WhatsApp & Versi Email Resmi).",
+                offlineGenerator: (data) => `# FORMAT PESAN DOSEN FORMAL (OFFLINE)\n\n### Versi WhatsApp:\nSelamat pagi/siang Bapak/Ibu ${data.namaDosen},\nMohon maaf mengganggu waktu Bapak/Ibu. Saya ${data.detailInfo} izin menghubungi terkait ${data.tujuan}...`
+            },
+            ringkasan: {
+                title: 'Ringkas Jurnal Eksekutif',
+                desc: 'Ekstraksi otomatis poin kunci, temuan utama, dan kesimpulan dari artikel/jurnal panjang.',
+                inputs: [
+                    { id: 'materi', label: 'Teks Materi / Artikel / Jurnal', placeholder: 'Tempelkan artikel jurnal di sini...', type: 'textarea' }
+                ],
+                sysPrompt: "Ekstraksi ringkasan eksekutif, poin-poin kunci utama, metodologi, dan kesimpulan dari teks jurnal/artikel berikut.",
+                offlineGenerator: (data) => `# RINGKASAN EKSEKUTIF (OFFLINE)\n\n- **Tujuan Utama:** Menganalisis dampak variabel pokok.\n- **Ringkasan:** Teks membahas pemodelan dan temuan empiris pada bidang studi.`
+            }
+        };
+
+        function switchTab(tabKey) {
+            currentTab = tabKey;
+            uploadedBase64Image = null;
+
+            // Hide all panels
+            document.getElementById('standardView').classList.add('hidden');
+            document.getElementById('gpaWidget').classList.add('hidden');
+            document.getElementById('pomodoroWidget').classList.add('hidden');
+            document.getElementById('tasksWidget').classList.add('hidden');
+            document.getElementById('mathCalcWidget').classList.add('hidden');
+            document.getElementById('jadwalWidget').classList.add('hidden');
+            document.getElementById('gachaWidget').classList.add('hidden');
+
+            // Reset active state styles
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white/20', 'text-white', 'border-l-4', 'border-blue-400');
+            });
+            
+            const activeBtn = document.getElementById(`btn-${tabKey}`);
+            if (activeBtn) activeBtn.classList.add('bg-white/20', 'text-white', 'border-l-4', 'border-blue-400');
+
+            if (tabKey === 'gpa') {
+                document.getElementById('gpaWidget').classList.remove('hidden');
+                initGpaWidget();
+            } else if (tabKey === 'pomodoro') {
+                document.getElementById('pomodoroWidget').classList.remove('hidden');
+                drawPomoCanvas();
+            } else if (tabKey === 'tasks') {
+                document.getElementById('tasksWidget').classList.remove('hidden');
+                renderTasks();
+            } else if (tabKey === 'math') {
+                document.getElementById('mathCalcWidget').classList.remove('hidden');
+            } else if (tabKey === 'jadwal') {
+                document.getElementById('jadwalWidget').classList.remove('hidden');
+                renderJadwal();
+            } else if (tabKey === 'gacha') {
+                document.getElementById('gachaWidget').classList.remove('hidden');
+                drawWheel();
+            } else {
+                document.getElementById('standardView').classList.remove('hidden');
+                const config = tabConfigs[tabKey];
+                
+                document.getElementById('tabTitle').innerText = config.title;
+                document.getElementById('tabDesc').innerText = config.desc;
+
+                const container = document.getElementById('dynamicInputs');
+                container.innerHTML = '';
+
+                config.inputs.forEach(inp => {
+                    const group = document.createElement('div');
+                    group.className = 'space-y-1.5';
+                    
+                    const labelHead = document.createElement('div');
+                    labelHead.className = 'flex justify-between items-center';
+
+                    const label = document.createElement('label');
+                    label.className = 'block text-xs font-bold text-slate-200';
+                    label.innerText = inp.label;
+                    labelHead.appendChild(label);
+
+                    // Add Voice Input Dictation Button if text/textarea
+                    if (inp.type !== 'file') {
+                        const micBtn = document.createElement('button');
+                        micBtn.type = 'button';
+                        micBtn.className = 'text-[11px] text-slate-400 hover:text-amber-300 transition flex items-center gap-1';
+                        micBtn.innerHTML = `<i class="fa-solid fa-microphone"></i> Dikte`;
+                        micBtn.onclick = () => startVoiceInput(`input_${inp.id}`, micBtn);
+                        labelHead.appendChild(micBtn);
+                    }
+
+                    group.appendChild(labelHead);
+
+                    let field;
+                    if (inp.type === 'file') {
+                        field = document.createElement('input');
+                        field.type = 'file';
+                        field.accept = 'image/*';
+                        field.className = 'w-full glass-input rounded-xl px-3 py-2 text-xs text-white file:mr-3 file:py-1 file:px-3 file:rounded-xl file:border-0 file:bg-white/10 file:text-slate-200 file:text-xs cursor-pointer';
+                        field.onchange = handleImageUpload;
+                    } else if (inp.type === 'textarea') {
+                        field = document.createElement('textarea');
+                        field.rows = 4;
+                        field.className = 'w-full glass-input rounded-2xl px-3.5 py-2.5 text-xs text-white focus:outline-none resize-none';
+                    } else {
+                        field = document.createElement('input');
+                        field.type = 'text';
+                        field.className = 'w-full glass-input rounded-2xl px-3.5 py-2.5 text-xs text-white focus:outline-none';
+                    }
+                    
+                    field.id = `input_${inp.id}`;
+                    if (inp.placeholder) field.placeholder = inp.placeholder;
+
+                    group.appendChild(field);
+                    container.appendChild(group);
+                });
+
+                document.getElementById('outputSection').classList.add('hidden');
+                document.getElementById('sourcesBox').classList.add('hidden');
+            }
+        }
+
+        // VOICE DICTATION RECOGNITION UTILITY
+        function startVoiceInput(inputId, btnEl) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                return showToast("Browser Anda tidak mendukung Speech Recognition.", "error");
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'id-ID';
+            recognition.interimResults = false;
+
+            btnEl.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-rose-400"></i> Mendengarkan...`;
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                const targetInput = document.getElementById(inputId);
+                if (targetInput) {
+                    targetInput.value += (targetInput.value ? ' ' : '') + transcript;
+                }
+                showToast("Suara berhasil didiktekan!");
+            };
+
+            recognition.onerror = () => {
+                showToast("Gagal merekam suara.", "error");
+            };
+
+            recognition.onend = () => {
+                btnEl.innerHTML = `<i class="fa-solid fa-microphone"></i> Dikte`;
+            };
+
+            recognition.start();
+        }
+
+        // IMAGE FILE TO BASE64 HANDLER
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                uploadedBase64Image = evt.target.result.split(',')[1];
+                showToast("Foto berhasil dimuat untuk analisis Gemini Vision!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function executeAction() {
+            const config = tabConfigs[currentTab];
+            if (!config) return;
+
+            const formData = {};
+            config.inputs.forEach(inp => {
+                const el = document.getElementById(`input_${inp.id}`);
+                formData[inp.id] = el ? el.value.trim() : '';
+            });
+
+            const loadingBox = document.getElementById('loadingBox');
+            const outputSection = document.getElementById('outputSection');
+            const sourcesBox = document.getElementById('sourcesBox');
+            const outputText = document.getElementById('outputText');
+            const outputRendered = document.getElementById('outputRendered');
+
+            // OFFLINE MODE FALLBACK
+            if (!isAiMode) {
+                showToast("Menggunakan Local Engine Offline.");
+                const offlineResult = config.offlineGenerator(formData);
+                outputText.value = offlineResult;
+                outputRendered.innerHTML = marked.parse(offlineResult);
+                outputSection.classList.remove('hidden');
+                sourcesBox.classList.add('hidden');
+                return;
+            }
+
+            // GEMINI AI MODE EXECUTION
+            loadingBox.classList.remove('hidden');
+            outputSection.classList.add('hidden');
+            sourcesBox.classList.add('hidden');
+
+            try {
+                let promptText = `Modul Akademik: ${config.title}\nDetail Input User:\n` + JSON.stringify(formData, null, 2);
+                let payload = {
+                    contents: [{ parts: [] }],
+                    systemInstruction: { parts: [{ text: config.sysPrompt }] }
+                };
+
+                if (currentTab === 'vision' && uploadedBase64Image) {
+                    payload.contents[0].parts.push({ text: formData.visionPrompt || "Analisis foto soal/catatan ini dan berikan jawaban lengkap." });
+                    payload.contents[0].parts.push({
+                        inlineData: { mimeType: "image/png", data: uploadedBase64Image }
+                    });
+                } else {
+                    payload.contents[0].parts.push({ text: promptText });
+                }
+
+                if (isSearchGrounding && currentTab !== 'vision') {
+                    payload.tools = [{ "google_search": {} }];
+                }
+
+                const result = await callGeminiAPI(payload, 'gemini-3-flash-preview');
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const generatedText = candidate.content.parts[0].text;
+                    outputText.value = generatedText;
+                    outputRendered.innerHTML = marked.parse(generatedText);
+
+                    // Citations Grounding
+                    const attributions = candidate.groundingMetadata?.groundingAttributions || [];
+                    const sourcesList = document.getElementById('sourcesList');
+                    sourcesList.innerHTML = '';
+
+                    const validSources = attributions
+                        .map(a => ({ uri: a.web?.uri, title: a.web?.title }))
+                        .filter(s => s.uri && s.title);
+
+                    if (validSources.length > 0) {
+                        validSources.forEach(s => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `<a href="${s.uri}" target="_blank" class="text-cyan-300 hover:underline font-medium">${s.title}</a>`;
+                            sourcesList.appendChild(li);
+                        });
+                        sourcesBox.classList.remove('hidden');
+                    }
+
+                    outputSection.classList.remove('hidden');
+                    showToast("Sintesis AI Gemini 3 Flash Berhasil!");
+                } else {
+                    throw new Error("Respon AI tidak valid.");
+                }
+
+            } catch (err) {
+                console.warn("AI Generation fallback triggered:", err);
+                showToast("Gagal terhubung ke Gemini API. Menggunakan Local Engine Fallback.", "error");
+                const fallbackText = config.offlineGenerator(formData);
+                outputText.value = fallbackText;
+                outputRendered.innerHTML = marked.parse(fallbackText + "\n\n> *[Catatan: Terjadi kendala API. Output disintesis melalui Local Engine]*");
+                outputSection.classList.remove('hidden');
+            } finally {
+                loadingBox.classList.add('hidden');
+            }
+        }
+
+        // TOGGLE RAW VS RENDERED MARKDOWN
+        function toggleMarkdownView() {
+            const outputRendered = document.getElementById('outputRendered');
+            const outputText = document.getElementById('outputText');
+            const toggleViewText = document.getElementById('toggleViewText');
+
+            if (outputText.classList.contains('hidden')) {
+                outputText.classList.remove('hidden');
+                outputRendered.classList.add('hidden');
+                toggleViewText.innerText = "View Formatted";
+            } else {
+                outputText.classList.add('hidden');
+                outputRendered.classList.remove('hidden');
+                toggleViewText.innerText = "View Raw";
+            }
+        }
+
+        // VOICE SYNTHESIS (GEMINI TTS API + BROWSER FALLBACK)
+        async function speakOutputText() {
+            const textToRead = document.getElementById('outputText').value.trim();
+            if (!textToRead) return showToast("Tidak ada teks untuk dibaca!", "error");
+
+            const ttsBtnText = document.getElementById('ttsBtnText');
+            const ttsIcon = document.getElementById('ttsIcon');
+            ttsBtnText.innerText = "Audio AI...";
+            ttsIcon.className = "fa-solid fa-spinner animate-spin text-purple-300";
+
+            try {
+                // Try Gemini TTS API
+                const promptString = "Bacakan teks berikut secara jelas dan profesional dalam bahasa Indonesia: " + textToRead.substring(0, 400);
+                const payload = {
+                    contents: [{ parts: [{ text: promptString }] }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } }
+                    }
+                };
+
+                const userKey = safeGetStorage('user_gemini_api_key') || "";
+                const ttsUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${userKey.trim()}`;
+
+                const response = await fetch(ttsUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("Gemini TTS endpoint unavailable");
+                const result = await response.json();
+                const inlineData = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+
+                if (inlineData && inlineData.data) {
+                    const sampleRateMatch = inlineData.mimeType?.match(/rate=(\d+)/);
+                    const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+                    const pcmData = base64ToArrayBuffer(inlineData.data);
+                    const wavBlob = pcmToWav(new Int16Array(pcmData), sampleRate);
+                    const audio = new Audio(URL.createObjectURL(wavBlob));
+                    audio.play();
+                    showToast("Memutar Suara AI Kore...");
+                } else {
+                    throw new Error("Audio data null");
+                }
+
+            } catch (err) {
+                // Browser Web SpeechSynthesis Fallback
+                console.log("Fallback to Web SpeechSynthesis:", err);
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(textToRead.substring(0, 300));
+                utterance.lang = 'id-ID';
+                window.speechSynthesis.speak(utterance);
+                showToast("Memutar Audio Web Speech...");
+            } finally {
+                ttsBtnText.innerText = "Suara AI";
+                ttsIcon.className = "fa-solid fa-volume-high text-purple-300";
+            }
+        }
+
+        // EXPORT FILE OPTIONS (.txt, .md, .doc)
+        function toggleExportMenu() {
+            document.getElementById('exportMenu').classList.toggle('hidden');
+        }
+
+        function exportOutput(format) {
+            const content = document.getElementById('outputText').value;
+            if (!content) return showToast("Tidak ada konten untuk diexport!", "error");
+
+            let mimeType = 'text/plain';
+            let extension = 'txt';
+            let fileContent = content;
+
+            if (format === 'md') {
+                mimeType = 'text/markdown';
+                extension = 'md';
+            } else if (format === 'doc') {
+                mimeType = 'application/msword';
+                extension = 'doc';
+                fileContent = `<html><head><meta charset='utf-8'></head><body>${document.getElementById('outputRendered').innerHTML}</body></html>`;
+            }
+
+            const blob = new Blob([fileContent], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `StudentOS_Export_${Date.now()}.${extension}`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            document.getElementById('exportMenu').classList.add('hidden');
+            showToast(`File berhasil di-export sebagai .${extension.toUpperCase()}!`);
+        }
+
+        function copyOutputText() {
+            const txt = document.getElementById('outputText').value;
+            if (!txt) return showToast("Tidak ada teks untuk disalin!", "error");
+            navigator.clipboard ? navigator.clipboard.writeText(txt) : document.execCommand('copy');
+            showToast("Teks disalin ke clipboard!");
+        }
+
+        // PCM TO WAV UTILITIES
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16Array, sampleRate = 24000) {
+            const numChannels = 1;
+            const bitsPerSample = 16;
+            const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
+            const blockAlign = numChannels * (bitsPerSample / 8);
+            const dataSize = pcm16Array.length * 2;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, bitsPerSample, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            let offset = 44;
+            for (let i = 0; i < pcm16Array.length; i++, offset += 2) {
+                view.setInt16(offset, pcm16Array[i], true);
+            }
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+        }
+
+        let gpaCourses = [];
+
+        function initGpaWidget() {
+            if (gpaCourses.length === 0) {
+                gpaCourses = [
+                    { name: 'Metodologi Penelitian', sks: 3, grade: 'A' },
+                    { name: 'Pemrograman Web', sks: 3, grade: 'A-' },
+                    { name: 'Kecerdasan Buatan', sks: 3, grade: 'B+' }
+                ];
+            }
+            renderGpaCourses();
+        }
+
+        function renderGpaCourses() {
+            const container = document.getElementById('gpaCourseList');
+            container.innerHTML = '';
+
+            gpaCourses.forEach((c, idx) => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2 glass-input p-2 rounded-xl';
+                row.innerHTML = `
+                    <input type="text" value="${c.name}" onchange="gpaCourses[${idx}].name=this.value" placeholder="Nama Matkul" class="flex-1 bg-transparent text-xs text-white focus:outline-none px-2">
+                    <input type="number" value="${c.sks}" min="1" max="6" onchange="gpaCourses[${idx}].sks=parseInt(this.value)||1; calculateGpaOverall()" class="w-16 bg-black/40 border border-white/10 text-xs text-center text-white rounded-lg py-1">
+                    <select onchange="gpaCourses[${idx}].grade=this.value; calculateGpaOverall()" class="bg-black/40 border border-white/10 text-xs text-white rounded-lg py-1 px-1">
+                        ${['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'D', 'E'].map(g => `<option value="${g}" ${c.grade===g?'selected':''}>${g}</option>`).join('')}
+                    </select>
+                    <button onclick="deleteGpaCourse(${idx})" class="text-rose-400 hover:text-rose-300 text-xs px-2"><i class="fa-solid fa-trash"></i></button>
+                `;
+                container.appendChild(row);
+            });
+
+            calculateGpaOverall();
+        }
+
+        function addGpaCourseRow() {
+            gpaCourses.push({ name: 'Mata Kuliah Baru', sks: 3, grade: 'A' });
+            renderGpaCourses();
+        }
+
+        function deleteGpaCourse(idx) {
+            gpaCourses.splice(idx, 1);
+            renderGpaCourses();
+        }
+
+        const gradePoints = { 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'D': 1.0, 'E': 0.0 };
+
+        function calculateGpaOverall() {
+            let totalPoints = 0;
+            let totalSks = 0;
+
+            gpaCourses.forEach(c => {
+                const pts = gradePoints[c.grade] || 0;
+                totalPoints += pts * c.sks;
+                totalSks += c.sks;
+            });
+
+            const ips = totalSks > 0 ? (totalPoints / totalSks) : 0;
+            document.getElementById('ipsDisplay').innerText = ips.toFixed(2);
+
+            // Cumulative Target Estimation
+            const prevIpk = parseFloat(document.getElementById('gpaPrevIpk').value) || 0;
+            const prevSks = parseInt(document.getElementById('gpaPrevSks').value) || 0;
+            const targetIpk = parseFloat(document.getElementById('gpaTargetIpk').value) || 0;
+
+            const adviceBox = document.getElementById('gpaTargetAdvice');
+
+            if (targetIpk > 0 && prevSks > 0) {
+                const newTotalSks = prevSks + totalSks;
+                const requiredTotalPoints = targetIpk * newTotalSks;
+                const prevTotalPoints = prevIpk * prevSks;
+                const requiredSemesterPoints = requiredTotalPoints - prevTotalPoints;
+                const requiredIps = totalSks > 0 ? (requiredSemesterPoints / totalSks) : 0;
+
+                if (requiredIps > 4.0) {
+                    adviceBox.innerHTML = `<span class="text-rose-400 font-bold">Target Tidak Memungkinkan:</span> Anda membutuhkan IPS sebesar <strong>${requiredIps.toFixed(2)}</strong> semester ini. Pertimbangkan untuk menambah SKS di semester berikutnya.`;
+                } else if (requiredIps <= 0) {
+                    adviceBox.innerHTML = `<span class="text-emerald-400 font-bold">Target Terlampaui:</span> IPK Kumulatif Anda sudah memenuhi target!`;
+                } else {
+                    adviceBox.innerHTML = `Untuk mencapai target IPK Kumulatif <strong>${targetIpk.toFixed(2)}</strong>, Anda wajib meraih minimal IPS <strong>${requiredIps.toFixed(2)}</strong> pada ${totalSks} SKS semester ini.`;
+                }
+            } else {
+                adviceBox.innerText = "Masukkan data IPK Lalu & Target untuk melihat rekomendasi kalkulasi.";
+            }
+        }
+
+        let pomoMinutes = 25;
+        let pomoSeconds = 0;
+        let pomoTotalSec = 25 * 60;
+        let pomoTimerId = null;
+        let pomoIsRunning = false;
+        let pomoSessionsCount = 0;
+        let pomoTotalTimeMin = 0;
+
+        function drawPomoCanvas() {
+            const canvas = document.getElementById('pomoCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const radius = canvas.width / 2;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Background Track Ring
+            ctx.beginPath();
+            ctx.arc(radius, radius, radius - 12, 0, 2 * Math.PI);
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+            ctx.lineWidth = 10;
+            ctx.stroke();
+
+            // Active Progress Ring
+            const total = pomoTotalSec || 1;
+            const remaining = pomoMinutes * 60 + pomoSeconds;
+            const progress = (total - remaining) / total;
+            const startAngle = -Math.PI / 2;
+            const endAngle = startAngle + progress * (2 * Math.PI);
+
+            ctx.beginPath();
+            ctx.arc(radius, radius, radius - 12, startAngle, endAngle);
+            ctx.strokeStyle = currentTheme === 'emerald' ? "#10b981" : currentTheme === 'amethyst' ? "#ec4899" : "#3b82f6";
+            ctx.lineWidth = 10;
+            ctx.lineCap = "round";
+            ctx.stroke();
+        }
+
+        function setPomoMode(mode) {
+            clearInterval(pomoTimerId);
+            pomoIsRunning = false;
+            document.getElementById('pomoPlayIcon').className = "fa-solid fa-play";
+            document.getElementById('pomoPlayText').innerText = "Mulai Fokus";
+
+            document.getElementById('pomoBtnWork').className = "flex-1 py-2 text-xs rounded-xl font-medium text-slate-400 hover:text-white transition";
+            document.getElementById('pomoBtnShort').className = "flex-1 py-2 text-xs rounded-xl font-medium text-slate-400 hover:text-white transition";
+            document.getElementById('pomoBtnLong').className = "flex-1 py-2 text-xs rounded-xl font-medium text-slate-400 hover:text-white transition";
+
+            if (mode === 'work') {
+                pomoMinutes = 25;
+                document.getElementById('pomoBtnWork').className = "flex-1 py-2 text-xs rounded-xl font-bold bg-white/20 text-white transition";
+                document.getElementById('pomoStateText').innerText = "Sesi Belajar Fokus";
+            } else if (mode === 'short') {
+                pomoMinutes = 5;
+                document.getElementById('pomoBtnShort').className = "flex-1 py-2 text-xs rounded-xl font-bold bg-white/20 text-white transition";
+                document.getElementById('pomoStateText').innerText = "Istirahat Singkat";
+            } else {
+                pomoMinutes = 15;
+                document.getElementById('pomoBtnLong').className = "flex-1 py-2 text-xs rounded-xl font-bold bg-white/20 text-white transition";
+                document.getElementById('pomoStateText').innerText = "Istirahat Panjang";
+            }
+
+            pomoSeconds = 0;
+            pomoTotalSec = pomoMinutes * 60;
+            updatePomoDisplay();
+        }
+
+        function updatePomoDisplay() {
+            const m = String(pomoMinutes).padStart(2, '0');
+            const s = String(pomoSeconds).padStart(2, '0');
+            document.getElementById('pomoTimerText').innerText = `${m}:${s}`;
+            drawPomoCanvas();
+        }
+
+        function togglePomoTimer() {
+            if (pomoIsRunning) {
+                clearInterval(pomoTimerId);
+                pomoIsRunning = false;
+                document.getElementById('pomoPlayIcon').className = "fa-solid fa-play";
+                document.getElementById('pomoPlayText').innerText = "Lanjutkan";
+            } else {
+                pomoIsRunning = true;
+                document.getElementById('pomoPlayIcon').className = "fa-solid fa-pause";
+                document.getElementById('pomoPlayText').innerText = "Jeda";
+
+                pomoTimerId = setInterval(() => {
+                    if (pomoSeconds === 0) {
+                        if (pomoMinutes === 0) {
+                            clearInterval(pomoTimerId);
+                            pomoIsRunning = false;
+                            playTimerChimeSound();
+                            pomoSessionsCount++;
+                            pomoTotalTimeMin += Math.round(pomoTotalSec / 60);
+                            document.getElementById('pomoCountText').innerText = pomoSessionsCount;
+                            document.getElementById('pomoTotalTimeText').innerText = `${pomoTotalTimeMin} menit`;
+                            showToast("Sesi Pomodoro Selesai! Waktunya Istirahat.");
+                            return;
+                        }
+                        pomoMinutes--;
+                        pomoSeconds = 59;
+                    } else {
+                        pomoSeconds--;
+                    }
+                    updatePomoDisplay();
+                }, 1000);
+            }
+        }
+
+        function resetPomoTimer() {
+            clearInterval(pomoTimerId);
+            pomoIsRunning = false;
+            pomoMinutes = 25;
+            pomoSeconds = 0;
+            pomoTotalSec = 25 * 60;
+            document.getElementById('pomoPlayIcon').className = "fa-solid fa-play";
+            document.getElementById('pomoPlayText').innerText = "Mulai Fokus";
+            updatePomoDisplay();
+        }
+
+        function playTimerChimeSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.5); // A5
+
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.2);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 1.2);
+            } catch (e) {
+                console.log("Audio synth blocked");
+            }
+        }
+
+        function getTasksData() {
+            const raw = safeGetStorage('student_tasks_v10');
+            return raw ? JSON.parse(raw) : [
+                { id: 1, title: 'Draft Bab 2 Tinjauan Pustaka', course: 'Skripsi', priority: 'high', category: 'Skripsi', dueDate: '2026-10-01T23:59', completed: false },
+                { id: 2, title: 'Kuis AI Agentic Workflow', course: 'Kecerdasan Buatan', priority: 'medium', category: 'Kuis', dueDate: '2026-09-28T10:00', completed: false }
+            ];
+        }
+
+        function saveTasksData(tasks) {
+            safeSetStorage('student_tasks_v10', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function filterTasks(filter) {
+            activeTaskFilter = filter;
+            document.querySelectorAll('.task-filter-btn').forEach(b => b.classList.remove('bg-white/20', 'text-white', 'border', 'border-white/20'));
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('taskList');
+            if (!container) return;
+            let tasks = getTasksData();
+
+            if (activeTaskFilter === 'pending') tasks = tasks.filter(t => !t.completed);
+            if (activeTaskFilter === 'completed') tasks = tasks.filter(t => t.completed);
+
+            container.innerHTML = '';
+            if (tasks.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-8 text-xs text-slate-400">Tidak ada tugas dalam daftar.</div>`;
+                return;
+            }
+
+            tasks.forEach(t => {
+                const card = document.createElement('div');
+                const prioColor = t.priority === 'high' ? 'border-rose-500/50 text-rose-300' : t.priority === 'medium' ? 'border-amber-500/50 text-amber-300' : 'border-blue-500/50 text-blue-300';
+                
+                card.className = `glass-panel p-3.5 rounded-2xl flex flex-col justify-between space-y-2 border ${t.completed ? 'opacity-50' : ''}`;
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between gap-1">
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full border ${prioColor}">${t.category}</span>
+                            <button onclick="deleteTask(${t.id})" class="text-xs text-slate-400 hover:text-rose-400"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <h4 class="text-xs font-bold text-white mt-2 ${t.completed ? 'line-through text-slate-400' : ''}">${t.title}</h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-book"></i> ${t.course}</p>
+                        <p class="text-[10px] text-slate-400"><i class="fa-regular fa-clock"></i> ${t.dueDate ? new Date(t.dueDate).toLocaleString('id-ID', {dateStyle:'short', timeStyle:'short'}) : '-'}</p>
+                    </div>
+                    <button onclick="toggleTaskStatus(${t.id})" class="w-full py-1.5 rounded-xl text-[11px] font-semibold transition ${t.completed ? 'bg-white/10 text-slate-300' : 'btn-liquid text-white'}">
+                        ${t.completed ? 'Tandai Belum Selesai' : 'Selesaikan Tugas'}
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openAddTaskModal() { document.getElementById('addTaskModal').classList.remove('hidden'); }
+        function closeAddTaskModal() { document.getElementById('addTaskModal').classList.add('hidden'); }
+
+        function saveNewTask() {
+            const title = document.getElementById('taskTitleInput').value.trim();
+            const course = document.getElementById('taskCourseInput').value.trim();
+            const priority = document.getElementById('taskPriorityInput').value;
+            const category = document.getElementById('taskCategoryInput').value;
+            const dueDate = document.getElementById('taskDueDateInput').value;
+
+            if (!title) return showToast("Judul tugas wajib diisi!", "error");
+
+            const tasks = getTasksData();
+            tasks.push({ id: Date.now(), title, course: course || 'Umum', priority, category, dueDate, completed: false });
+            saveTasksData(tasks);
+
+            document.getElementById('taskTitleInput').value = '';
+            document.getElementById('taskCourseInput').value = '';
+            closeAddTaskModal();
+            showToast("Tugas baru ditambahkan!");
+        }
+
+        function toggleTaskStatus(id) {
+            const tasks = getTasksData();
+            const task = tasks.find(t => t.id === id);
+            if (task) { task.completed = !task.completed; saveTasksData(tasks); }
+        }
+
+        function deleteTask(id) {
+            let tasks = getTasksData();
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasksData(tasks);
+            showToast("Tugas dihapus.");
+        }
+
+        function calcInput(val) {
+            const display = document.getElementById('calcDisplay');
+            if (display.value === '0' || display.value === 'Error') display.value = '';
+            if (val === 'C') { display.value = '0'; } else { display.value += val; }
+        }
+
+        function calcBackspace() {
+            const display = document.getElementById('calcDisplay');
+            if (display.value.length > 1) { display.value = display.value.slice(0, -1); } else { display.value = '0'; }
+        }
+
+        function calcFunc(fn) {
+            const display = document.getElementById('calcDisplay');
+            try {
+                let val = parseFloat(eval(display.value) || 0);
+                if (fn === 'sin') display.value = Math.sin(val * Math.PI / 180).toFixed(6);
+                if (fn === 'cos') display.value = Math.cos(val * Math.PI / 180).toFixed(6);
+                if (fn === 'tan') display.value = Math.tan(val * Math.PI / 180).toFixed(6);
+                if (fn === 'sqrt') display.value = Math.sqrt(val).toFixed(6);
+                if (fn === 'log') display.value = Math.log10(val).toFixed(6);
+                if (fn === 'ln') display.value = Math.log(val).toFixed(6);
+                if (fn === 'pow') display.value = Math.pow(val, 2);
+            } catch (e) { display.value = 'Error'; }
+        }
+
+        function calcEqual() {
+            const display = document.getElementById('calcDisplay');
+            try { display.value = eval(display.value.replace(/×/g, '*').replace(/÷/g, '/')); } catch (e) { display.value = 'Error'; }
+        }
+
+        function getJadwalData() {
+            const raw = safeGetStorage('jadwal_kuliah_v10');
+            return raw ? JSON.parse(raw) : [];
+        }
+
+        function saveJadwalData(data) {
+            safeSetStorage('jadwal_kuliah_v10', JSON.stringify(data));
+            renderJadwal();
+        }
+
+        function addJadwal() {
+            const matkul = document.getElementById('jMatkul').value.trim();
+            const hari = document.getElementById('jHari').value;
+            const jamMulai = document.getElementById('jJamMulai').value;
+            const jamSelesai = document.getElementById('jJamSelesai').value;
+            const ruang = document.getElementById('jRuang').value.trim();
+            const dosen = document.getElementById('jDosen').value.trim();
+
+            if (!matkul || !jamMulai) return showToast('Isi nama mata kuliah dan jam!', 'error');
+
+            const current = getJadwalData();
+            current.push({ id: Date.now(), matkul, hari, jamMulai, jamSelesai, ruang, dosen });
+            saveJadwalData(current);
+
+            document.getElementById('jMatkul').value = '';
+            document.getElementById('jRuang').value = '';
+            document.getElementById('jDosen').value = '';
+            showToast("Jadwal kuliah disimpan!");
+        }
+
+        function deleteJadwal(id) {
+            let current = getJadwalData();
+            current = current.filter(item => item.id !== id);
+            saveJadwalData(current);
+            showToast("Jadwal dihapus.");
+        }
+
+        function renderJadwal() {
+            const container = document.getElementById('jadwalList');
+            if (!container) return;
+            const data = getJadwalData();
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-8 text-xs text-slate-400">Belum ada jadwal disimpan.</div>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel p-3.5 rounded-2xl flex flex-col justify-between space-y-2 border border-white/10';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full btn-liquid text-white">${item.hari}</span>
+                            <button onclick="deleteJadwal(${item.id})" class="text-xs text-slate-400 hover:text-rose-400"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <h4 class="text-xs font-bold text-white mt-2">${item.matkul}</h4>
+                        <p class="text-[11px] text-slate-300 mt-0.5"><i class="fa-regular fa-clock text-amber-400"></i> ${item.jamMulai} - ${item.jamSelesai || 'Selesai'}</p>
+                        <p class="text-[11px] text-slate-300"><i class="fa-solid fa-location-dot text-rose-400"></i> ${item.ruang || 'TBA'}</p>
+                        <p class="text-[11px] text-slate-300"><i class="fa-solid fa-user-tie text-emerald-400"></i> ${item.dosen || '-'}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        let wheelAngle = 0;
+        let isSpinning = false;
+        const colorsSapphire = ['#1e40af', '#2563eb', '#3b82f6', '#60a5fa', '#1d4ed8', '#0284c7'];
+        const colorsEmerald = ['#065f46', '#059669', '#10b981', '#34d399', '#0d9488', '#0891b2'];
+        const colorsAmethyst = ['#831843', '#be185d', '#ec4899', '#f472b6', '#9d174d', '#e11d48'];
+
+        function getWheelItems() {
+            const text = document.getElementById('wheelInput').value.trim();
+            return text ? text.split('\n').filter(i => i.trim() !== '') : ['Kelompok 1', 'Kelompok 2'];
+        }
+
+        function drawWheel() {
+            const canvas = document.getElementById('wheelCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const items = getWheelItems();
+            const numSegments = items.length;
+            const radius = canvas.width / 2;
+            const colors = currentTheme === 'emerald' ? colorsEmerald : currentTheme === 'amethyst' ? colorsAmethyst : colorsSapphire;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const arc = (2 * Math.PI) / numSegments;
+
+            for (let i = 0; i < numSegments; i++) {
+                const angle = wheelAngle + i * arc;
+                ctx.beginPath();
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, radius, angle, angle + arc);
+                ctx.lineTo(radius, radius);
+                ctx.fill();
+
+                ctx.save();
+                ctx.translate(radius, radius);
+                ctx.rotate(angle + arc / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 11px Plus Jakarta Sans";
+                ctx.fillText(items[i], radius - 15, 4);
+                ctx.restore();
+            }
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            isSpinning = true;
+            document.getElementById('wheelWinner').innerText = "";
+
+            const spinAngle = Math.random() * 10 + 28;
+            let currentSpin = 0;
+
+            function animate() {
+                currentSpin += 0.2;
+                if (currentSpin >= spinAngle) {
+                    isSpinning = false;
+                    determineWinner();
+                    return;
+                }
+                wheelAngle += (spinAngle - currentSpin) * 0.025;
+                drawWheel();
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function determineWinner() {
+            const items = getWheelItems();
+            const numSegments = items.length;
+            const arc = (2 * Math.PI) / numSegments;
+            
+            let normalizedAngle = (Math.PI * 1.5 - (wheelAngle % (2 * Math.PI))) % (2 * Math.PI);
+            if (normalizedAngle < 0) normalizedAngle += 2 * Math.PI;
+
+            const winnerIndex = Math.floor(normalizedAngle / arc);
+            document.getElementById('wheelWinner').innerText = "🎉 Pemenang Undian: " + items[winnerIndex];
+            playTimerChimeSound();
+        }
+
+        function toggleThemeDropdown() {
+            document.getElementById('themeDropdown').classList.toggle('hidden');
+        }
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.body.className = `theme-${theme} min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white`;
+            document.getElementById('themeLabel').innerText = theme === 'emerald' ? '💚 Emerald' : theme === 'amethyst' ? '🩷 Amethyst' : '💙 Sapphire';
+            document.getElementById('themeDropdown').classList.add('hidden');
+            if (currentTab === 'gacha') drawWheel();
+            if (currentTab === 'pomodoro') drawPomoCanvas();
+        }
+
+        function toggleAiMode() {
+            isAiMode = !isAiMode;
+            const badge = document.getElementById('engineBadgeText');
+            const aiIndicator = document.getElementById('aiIndicator');
+            const submitBtnText = document.getElementById('submitBtnText');
+
+            if (isAiMode) {
+                badge.innerText = "Gemini 3 Flash AI";
+                aiIndicator.innerHTML = `<i class="fa-solid fa-brain"></i> Engine: Gemini 3 Flash AI`;
+                submitBtnText.innerText = "Generate Sekarang dengan Gemini AI";
+                showToast("Mode AI Gemini Aktif!");
+            } else {
+                badge.innerText = "Offline Local Engine";
+                aiIndicator.innerHTML = `<i class="fa-solid fa-shield"></i> Engine: Local Engine (Offline)`;
+                submitBtnText.innerText = "Generate Offline Template";
+                showToast("Mode 100% Offline Aktif!");
+            }
+        }
+
+        function toggleSearchGrounding() {
+            isSearchGrounding = !isSearchGrounding;
+            document.getElementById('groundingLabel').innerText = isSearchGrounding ? "Google Search: ON" : "Google Search: OFF";
+            showToast(`Google Search Grounding ${isSearchGrounding ? 'Diaktifkan' : 'Dinonaktifkan'}.`);
+        }
+
+        function openApiModal() {
+            document.getElementById('userApiKeyInput').value = safeGetStorage('user_gemini_api_key') || '';
+            document.getElementById('apiModal').classList.remove('hidden');
+        }
+
+        function closeApiModal() { document.getElementById('apiModal').classList.add('hidden'); }
+
+        function saveApiKey() {
+            const val = document.getElementById('userApiKeyInput').value.trim();
+            safeSetStorage('user_gemini_api_key', val);
+            showToast(val ? "Custom Gemini API Key disimpan!" : "Key dikembalikan ke mode Runtime Injected.");
+            closeApiModal();
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMessage.innerText = message;
+            if (type === "error") {
+                toastIcon.className = "fa-solid fa-circle-xmark text-rose-400 text-base";
+                toast.classList.replace('border-emerald-500/40', 'border-rose-500/40');
+            } else {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-base";
+                toast.classList.replace('border-rose-500/40', 'border-emerald-500/40');
+            }
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3200);
+        }
+
+        // INITIALIZE APP ON LOAD
+        document.addEventListener('DOMContentLoaded', () => {
+            switchTab('skripsi');
+        });
+    </script>
+
+<!-- Student OS v11.0 Release Hardening Patch -->
+<style>
+    :root { color-scheme: dark; }
+    html { scroll-behavior: smooth; }
+    button, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+        outline: 2px solid var(--accent-primary);
+        outline-offset: 2px;
+    }
+    .nav-btn { position: relative; }
+    .nav-btn.active-nav {
+        background: rgba(255,255,255,.12) !important;
+        color: #fff !important;
+        border-left: 3px solid var(--accent-primary) !important;
+        box-shadow: inset 0 0 18px rgba(255,255,255,.04);
+    }
+    .nav-btn:active { transform: scale(.985); }
+    .app-status {
+        font-size: 10px; color: #94a3b8; display:flex; align-items:center; gap:6px;
+        white-space:nowrap;
+    }
+    .app-status-dot { width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 10px rgba(16,185,129,.55); }
+    .task-overdue { border-color: rgba(244,63,94,.55) !important; }
+    .task-due-soon { border-color: rgba(245,158,11,.5) !important; }
+    .field-error { border-color: rgba(244,63,94,.8) !important; box-shadow:0 0 0 2px rgba(244,63,94,.12); }
+    .image-preview-wrap { margin-top:8px; border:1px solid rgba(255,255,255,.1); border-radius:16px; overflow:hidden; background:rgba(0,0,0,.2); }
+    .image-preview-wrap img { display:block; width:100%; max-height:220px; object-fit:contain; }
+    .kbd { border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06); padding:1px 5px; border-radius:5px; font:500 10px/1.5 'Fira Code',monospace; }
+    @media (max-width: 767px) {
+        header .max-w-7xl { padding-top:10px; padding-bottom:10px; }
+        header .max-w-7xl > .flex:last-child { width:100%; overflow-x:auto; flex-wrap:nowrap; padding-bottom:2px; }
+        aside#studentSidebar {
+            position:fixed; inset:0 auto 0 0; width:min(86vw,320px); height:100dvh !important; z-index:60;
+            border-radius:0 24px 24px 0; transform:translateX(-105%); transition:transform .25s ease;
+            background:rgba(6,9,19,.92); backdrop-filter:blur(26px); -webkit-backdrop-filter:blur(26px);
+        }
+        aside#studentSidebar.mobile-open { transform:translateX(0); }
+        .sidebar-scrim { position:fixed; inset:0; z-index:55; background:rgba(0,0,0,.55); backdrop-filter:blur(3px); }
+        main { min-height:calc(100dvh - 5rem) !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
+    }
+</style>
+<script>
+(function(){
+    'use strict';
+
+    const APP_VERSION = '11.0';
+    const STORAGE = {
+        theme:'studentos_theme',
+        ai:'studentos_ai_mode',
+        grounding:'studentos_grounding',
+        gpa:'studentos_gpa_v11',
+        pomo:'studentos_pomo_v11'
+    };
+
+    const originalGetTasksData = window.getTasksData;
+    const originalSaveTasksData = window.saveTasksData;
+
+    function safeJsonGet(key, fallback) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return fallback;
+            const parsed = JSON.parse(raw);
+            return parsed ?? fallback;
+        } catch { return fallback; }
+    }
+    function safeJsonSet(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+    }
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    }
+    function debounce(fn, wait=250) {
+        let timer; return (...args) => { clearTimeout(timer); timer=setTimeout(()=>fn(...args),wait); };
+    }
+    function validDate(value) {
+        const d = new Date(value);
+        return Number.isFinite(d.getTime());
+    }
+
+    // ---------- Mobile navigation ----------
+    function setupMobileNav() {
+        const aside = document.querySelector('aside');
+        if (!aside) return;
+        aside.id = 'studentSidebar';
+
+        const headerBrand = document.querySelector('header .max-w-7xl > .flex:first-child');
+        if (headerBrand && !document.getElementById('mobileMenuBtn')) {
+            const btn = document.createElement('button');
+            btn.id='mobileMenuBtn';
+            btn.className='md:hidden glass-panel w-10 h-10 rounded-xl text-slate-200 flex items-center justify-center border border-white/10';
+            btn.setAttribute('aria-label','Buka menu');
+            btn.innerHTML='<i class="fa-solid fa-bars"></i>';
+            btn.onclick=toggleMobileSidebar;
+            headerBrand.prepend(btn);
+        }
+        if (!document.getElementById('sidebarScrim')) {
+            const scrim=document.createElement('div');
+            scrim.id='sidebarScrim'; scrim.className='sidebar-scrim hidden';
+            scrim.onclick=toggleMobileSidebar;
+            document.body.appendChild(scrim);
+        }
+    }
+    window.toggleMobileSidebar=function(){
+        const aside=document.getElementById('studentSidebar'), scrim=document.getElementById('sidebarScrim');
+        if (!aside || !scrim) return;
+        const open=aside.classList.toggle('mobile-open');
+        scrim.classList.toggle('hidden',!open);
+        document.body.style.overflow=open?'hidden':'';
+    };
+
+    // ---------- Persistent preferences ----------
+    function restorePreferences() {
+        const theme=safeJsonGet(STORAGE.theme,'sapphire');
+        const ai=safeJsonGet(STORAGE.ai,true);
+        const grounding=safeJsonGet(STORAGE.grounding,true);
+        currentTheme=theme;
+        isAiMode=ai;
+        isSearchGrounding=grounding;
+
+        document.body.className=`theme-${theme} min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white`;
+        const themeLabel=document.getElementById('themeLabel');
+        if(themeLabel) themeLabel.innerText=theme==='emerald'?'💚 Emerald':theme==='amethyst'?'🩷 Amethyst':'💙 Sapphire';
+        const ground=document.getElementById('groundingLabel');
+        if(ground) ground.innerText=grounding?'Google Search: ON':'Google Search: OFF';
+    }
+    const originalSetTheme=window.setTheme;
+    window.setTheme=function(theme){
+        if(!['sapphire','emerald','amethyst'].includes(theme)) return;
+        currentTheme=theme; safeJsonSet(STORAGE.theme,theme);
+        document.body.className=`theme-${theme} min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white`;
+        const label=document.getElementById('themeLabel');
+        if(label) label.innerText=theme==='emerald'?'💚 Emerald':theme==='amethyst'?'🩷 Amethyst':'💙 Sapphire';
+        document.getElementById('themeDropdown')?.classList.add('hidden');
+        if(currentTab==='gacha') drawWheel();
+        if(currentTab==='pomodoro') drawPomoCanvas();
+        showToast('Tema disimpan.');
+    };
+    window.toggleAiMode=function(){
+        isAiMode=!isAiMode; safeJsonSet(STORAGE.ai,isAiMode);
+        const badge=document.getElementById('engineBadgeText');
+        const indicator=document.getElementById('aiIndicator');
+        const submit=document.getElementById('submitBtnText');
+        const status=document.getElementById('aiStatusTag');
+        if(isAiMode){
+            badge.innerText='Gemini AI';
+            indicator.innerHTML='<i class="fa-solid fa-brain"></i> Engine: Gemini AI';
+            submit.innerText='Generate dengan Gemini AI';
+            status.innerText='LIVE AI';
+            showToast('Mode AI aktif.');
+        }else{
+            badge.innerText='Offline';
+            indicator.innerHTML='<i class="fa-solid fa-shield"></i> Engine: Local Offline';
+            submit.innerText='Generate Offline';
+            status.innerText='OFFLINE';
+            showToast('Mode offline aktif.');
+        }
+    };
+    window.toggleSearchGrounding=function(){
+        isSearchGrounding=!isSearchGrounding; safeJsonSet(STORAGE.grounding,isSearchGrounding);
+        document.getElementById('groundingLabel').innerText=isSearchGrounding?'Google Search: ON':'Google Search: OFF';
+        showToast(isSearchGrounding?'Web grounding aktif.':'Web grounding dimatikan.');
+    };
+
+    // ---------- Better tab switching ----------
+    const baseSwitchTab=window.switchTab;
+    window.switchTab=function(tabKey){
+        if(!tabConfigs[tabKey]) return;
+        baseSwitchTab(tabKey);
+        document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active-nav'));
+        document.getElementById(`btn-${tabKey}`)?.classList.add('active-nav');
+        if(window.innerWidth < 768) toggleMobileSidebar();
+    };
+
+    // ---------- Dynamic input quality ----------
+    const baseHandleImageUpload=window.handleImageUpload;
+    window.handleImageUpload=function(e){
+        const file=e.target.files?.[0];
+        if(!file) return;
+        const allowed=['image/jpeg','image/png','image/webp'];
+        if(!allowed.includes(file.type)) {
+            e.target.value=''; uploadedBase64Image=null;
+            return showToast('Gunakan JPG, PNG, atau WebP.','error');
+        }
+        if(file.size>8*1024*1024) {
+            e.target.value=''; uploadedBase64Image=null;
+            return showToast('Ukuran gambar maksimal 8 MB.','error');
+        }
+        const reader=new FileReader();
+        reader.onload=evt=>{
+            uploadedBase64Image=evt.target.result.split(',')[1];
+            window._uploadedMimeType=file.type;
+            let wrap=document.getElementById('imagePreview');
+            if(!wrap){
+                wrap=document.createElement('div'); wrap.id='imagePreview'; wrap.className='image-preview-wrap';
+                e.target.parentElement.appendChild(wrap);
+            }
+            wrap.innerHTML=`<img src="${evt.target.result}" alt="Preview foto yang dipilih"><div class="px-3 py-2 text-[10px] text-slate-400">${escapeHtml(file.name)} · ${(file.size/1024/1024).toFixed(2)} MB</div>`;
+            showToast('Foto siap dianalisis.');
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // ---------- Release-grade AI execution ----------
+    const baseExecuteAction=window.executeAction;
+    window.executeAction=async function(){
+        const config=tabConfigs[currentTab];
+        if(!config) return;
+
+        let hasError=false;
+        const formData={};
+        config.inputs.forEach(inp=>{
+            const el=document.getElementById(`input_${inp.id}`);
+            if(!el) return;
+            const value=el.type==='file' ? '' : el.value.trim();
+            formData[inp.id]=value;
+            if(inp.type!=='file' && !value){
+                // Only require the primary text fields; optional details remain optional.
+                const primary=['jurusan','topikSkripsi','queryResearch','visionPrompt','teksAsli','topik','soalUjian','teksAwal','materi'];
+                if(primary.includes(inp.id)){
+                    el.classList.add('field-error'); hasError=true;
+                    setTimeout(()=>el.classList.remove('field-error'),1500);
+                }
+            }
+        });
+        if(currentTab==='vision' && !uploadedBase64Image){
+            showToast('Pilih foto terlebih dahulu.','error'); return;
+        }
+        if(hasError){ showToast('Lengkapi kolom utama terlebih dahulu.','error'); return; }
+
+        const btn=document.getElementById('submitBtn');
+        if(btn?.dataset.busy==='1') return;
+        if(btn) { btn.dataset.busy='1'; btn.disabled=true; btn.classList.add('opacity-70','cursor-wait'); }
+
+        try {
+            await baseExecuteAction();
+        } finally {
+            if(btn) { btn.dataset.busy='0'; btn.disabled=false; btn.classList.remove('opacity-70','cursor-wait'); }
+        }
+    };
+
+    // ---------- Safer API request ----------
+    const baseCallGeminiAPI=window.callGeminiAPI;
+    window.callGeminiAPI=async function(payload, model='gemini-3-flash-preview', retries=2){
+        const key=(safeGetStorage('user_gemini_api_key')||'').trim();
+        if(!key) throw new Error('API key belum diatur. Tambahkan Gemini API key di Pengaturan.');
+        if(!/^AIza[0-9A-Za-z_-]{20,}$/.test(key)) throw new Error('Format Gemini API key tampaknya tidak valid.');
+
+        let lastError;
+        for(let attempt=0; attempt<=retries; attempt++){
+            try{
+                const controller=new AbortController();
+                const timeout=setTimeout(()=>controller.abort(),45000);
+                const url=`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;
+                const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:controller.signal});
+                clearTimeout(timeout);
+                const body=await response.json().catch(()=>({}));
+                if(!response.ok){
+                    const message=body?.error?.message||`HTTP ${response.status}`;
+                    if((response.status===429||response.status>=500)&&attempt<retries){
+                        await new Promise(r=>setTimeout(r,1000*Math.pow(2,attempt)));
+                        continue;
+                    }
+                    throw new Error(message);
+                }
+                return body;
+            }catch(err){
+                lastError=err;
+                if(attempt<retries && err.name!=='AbortError'){
+                    await new Promise(r=>setTimeout(r,700*Math.pow(2,attempt)));
+                }
+            }
+        }
+        throw lastError||new Error('Permintaan AI gagal.');
+    };
+
+    // ---------- Better Vision payload + grounding citations ----------
+    const baseExecute=window.executeAction;
+    // Patch only MIME behavior inside the original path by temporarily wrapping uploaded MIME.
+    const oldUploadMime=()=>window._uploadedMimeType||'image/jpeg';
+    // Override call indirectly: payload generated by original code is otherwise valid.
+    // We keep the original execution to preserve all module prompts.
+
+    // ---------- GPA: no demo data + persistence ----------
+    window.initGpaWidget=function(){
+        const saved=safeJsonGet(STORAGE.gpa,null);
+        if(Array.isArray(saved)) gpaCourses=saved;
+        else if(!Array.isArray(gpaCourses) || gpaCourses.length===0) gpaCourses=[];
+        renderGpaCourses();
+    };
+    const baseRenderGpaCourses=window.renderGpaCourses;
+    window.renderGpaCourses=function(){
+        baseRenderGpaCourses();
+        safeJsonSet(STORAGE.gpa,gpaCourses);
+        const container=document.getElementById('gpaCourseList');
+        if(container && gpaCourses.length===0){
+            container.innerHTML=`<div class="text-center py-8 text-xs text-slate-500">Belum ada mata kuliah. Tambahkan mata kuliah untuk menghitung IPS.</div>`;
+            document.getElementById('ipsDisplay').innerText='0.00';
+        }
+    };
+    window.addGpaCourseRow=function(){
+        gpaCourses.push({name:'Mata Kuliah Baru',sks:3,grade:'A'});
+        renderGpaCourses();
+    };
+    window.deleteGpaCourse=function(idx){
+        gpaCourses.splice(idx,1); renderGpaCourses(); showToast('Mata kuliah dihapus.');
+    };
+
+    // ---------- Pomodoro: accurate timer + persistence ----------
+    let pomoMode='work';
+    function savePomoStats(){ safeJsonSet(STORAGE.pomo,{count:pomoSessionsCount,total:pomoTotalTimeMin}); }
+    function restorePomoStats(){
+        const s=safeJsonGet(STORAGE.pomo,{count:0,total:0});
+        pomoSessionsCount=Number(s.count)||0; pomoTotalTimeMin=Number(s.total)||0;
+        const c=document.getElementById('pomoCountText'), t=document.getElementById('pomoTotalTimeText');
+        if(c)c.innerText=pomoSessionsCount; if(t)t.innerText=`${pomoTotalTimeMin} menit`;
+    }
+    const baseSetPomoMode=window.setPomoMode;
+    window.setPomoMode=function(mode){
+        pomoMode=mode;
+        baseSetPomoMode(mode);
+    };
+    const baseResetPomoTimer=window.resetPomoTimer;
+    window.resetPomoTimer=function(){
+        baseResetPomoTimer(); pomoMode='work';
+    };
+    const baseTogglePomoTimer=window.togglePomoTimer;
+    window.togglePomoTimer=baseTogglePomoTimer;
+    // Restore stats once DOM exists.
+    document.addEventListener('DOMContentLoaded',restorePomoStats,{once:true});
+
+    // ---------- Tasks: real empty state, sort, urgency, confirmation ----------
+    window.getTasksData=function(){
+        const raw=safeGetStorage('student_tasks_v10');
+        if(!raw) return [];
+        try { return JSON.parse(raw)||[]; } catch { return []; }
+    };
+    window.renderTasks=function(){
+        const container=document.getElementById('taskList'); if(!container)return;
+        let tasks=getTasksData();
+        if(activeTaskFilter==='pending') tasks=tasks.filter(t=>!t.completed);
+        if(activeTaskFilter==='completed') tasks=tasks.filter(t=>t.completed);
+        tasks.sort((a,b)=>{
+            if(!!a.completed!==!!b.completed) return a.completed?1:-1;
+            const ad=validDate(a.dueDate)?new Date(a.dueDate).getTime():Infinity;
+            const bd=validDate(b.dueDate)?new Date(b.dueDate).getTime():Infinity;
+            return ad-bd;
+        });
+        container.innerHTML='';
+        if(!tasks.length){
+            container.innerHTML=`<div class="col-span-full text-center py-10"><div class="text-2xl mb-2">✓</div><div class="text-xs font-semibold text-slate-300">${activeTaskFilter==='completed'?'Belum ada tugas selesai.':'Belum ada tugas.'}</div><div class="text-[10px] text-slate-500 mt-1">Tambahkan tugas pertama untuk mulai mengatur deadline.</div></div>`;
+            return;
+        }
+        const now=Date.now();
+        tasks.forEach(t=>{
+            const due=validDate(t.dueDate)?new Date(t.dueDate).getTime():NaN;
+            const overdue=!t.completed&&Number.isFinite(due)&&due<now;
+            const soon=!t.completed&&Number.isFinite(due)&&due>=now&&due-now<48*3600*1000;
+            const prio=t.priority==='high'?'border-rose-500/50 text-rose-300':t.priority==='medium'?'border-amber-500/50 text-amber-300':'border-blue-500/50 text-blue-300';
+            const card=document.createElement('div');
+            card.className=`glass-panel p-4 rounded-2xl flex flex-col justify-between gap-3 border ${t.completed?'opacity-60':''} ${overdue?'task-overdue':soon?'task-due-soon':''}`;
+            const dueLabel=validDate(t.dueDate)?new Date(t.dueDate).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}):'Tanpa deadline';
+            const status=overdue?'Terlambat':soon?'Segera':t.completed?'Selesai':'Terjadwal';
+            card.innerHTML=`
+                <div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[9px] font-bold px-2 py-1 rounded-full border ${prio}">${escapeHtml(t.category||'Tugas')}</span>
+                        <button onclick="deleteTask(${Number(t.id)})" class="w-8 h-8 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-white/5" aria-label="Hapus tugas"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <h4 class="text-sm font-bold text-white mt-3 ${t.completed?'line-through text-slate-400':''}">${escapeHtml(t.title)}</h4>
+                    <p class="text-[10px] text-slate-400 mt-1"><i class="fa-solid fa-book mr-1"></i>${escapeHtml(t.course||'Umum')}</p>
+                    <div class="flex items-center justify-between gap-2 mt-3">
+                        <p class="text-[10px] ${overdue?'text-rose-300':soon?'text-amber-300':'text-slate-400'}"><i class="fa-regular fa-clock mr-1"></i>${dueLabel}</p>
+                        <span class="text-[9px] px-2 py-1 rounded-full bg-white/5 text-slate-400">${status}</span>
+                    </div>
+                </div>
+                <button onclick="toggleTaskStatus(${Number(t.id)})" class="w-full py-2 rounded-xl text-[11px] font-semibold transition ${t.completed?'bg-white/10 text-slate-300':'btn-liquid text-white'}">
+                    ${t.completed?'Tandai Belum Selesai':'Tandai Selesai'}
+                </button>`;
+            container.appendChild(card);
+        });
+    };
+    window.saveNewTask=function(){
+        const title=document.getElementById('taskTitleInput').value.trim();
+        const course=document.getElementById('taskCourseInput').value.trim();
+        const priority=document.getElementById('taskPriorityInput').value;
+        const category=document.getElementById('taskCategoryInput').value;
+        const dueDate=document.getElementById('taskDueDateInput').value;
+        if(!title)return showToast('Judul tugas wajib diisi.','error');
+        if(dueDate && !validDate(dueDate))return showToast('Deadline tidak valid.','error');
+        const tasks=getTasksData();
+        tasks.push({id:Date.now(),title,course:course||'Umum',priority,category,dueDate,completed:false});
+        safeJsonSet('student_tasks_v10',tasks); renderTasks();
+        ['taskTitleInput','taskCourseInput','taskDueDateInput'].forEach(id=>document.getElementById(id).value='');
+        closeAddTaskModal(); showToast('Tugas ditambahkan.');
+    };
+    window.toggleTaskStatus=function(id){
+        const tasks=getTasksData(), t=tasks.find(x=>Number(x.id)===Number(id));
+        if(!t)return;
+        t.completed=!t.completed; safeJsonSet('student_tasks_v10',tasks); renderTasks();
+        showToast(t.completed?'Tugas ditandai selesai.':'Tugas dikembalikan ke daftar.');
+    };
+    window.deleteTask=function(id){
+        if(!confirm('Hapus tugas ini?'))return;
+        const tasks=getTasksData().filter(t=>Number(t.id)!==Number(id));
+        safeJsonSet('student_tasks_v10',tasks); renderTasks(); showToast('Tugas dihapus.');
+    };
+    window.filterTasks=function(filter){
+        activeTaskFilter=filter;
+        document.querySelectorAll('.task-filter-btn').forEach(b=>b.classList.remove('active-filter','bg-white/20','text-white','border','border-white/20'));
+        const map={all:0,pending:1,completed:2};
+        document.querySelectorAll('.task-filter-btn')[map[filter]]?.classList.add('active-filter','bg-white/20','text-white','border','border-white/20');
+        renderTasks();
+    };
+
+    // ---------- Schedule: validate, sort by weekday/time, confirm delete ----------
+    const dayOrder={Senin:1,Selasa:2,Rabu:3,Kamis:4,Jumat:5,Sabtu:6};
+    window.addJadwal=function(){
+        const matkul=document.getElementById('jMatkul').value.trim(), hari=document.getElementById('jHari').value;
+        const jamMulai=document.getElementById('jJamMulai').value, jamSelesai=document.getElementById('jJamSelesai').value;
+        const ruang=document.getElementById('jRuang').value.trim(), dosen=document.getElementById('jDosen').value.trim();
+        if(!matkul||!jamMulai)return showToast('Nama mata kuliah dan jam mulai wajib diisi.','error');
+        if(jamSelesai && jamSelesai<=jamMulai)return showToast('Jam selesai harus setelah jam mulai.','error');
+        const current=getJadwalData();
+        current.push({id:Date.now(),matkul,hari,jamMulai,jamSelesai,ruang,dosen});
+        saveJadwalData(current);
+        ['jMatkul','jRuang','jDosen','jJamMulai','jJamSelesai'].forEach(id=>document.getElementById(id).value='');
+        showToast('Jadwal disimpan.');
+    };
+    const baseRenderJadwal=window.renderJadwal;
+    window.renderJadwal=function(){
+        const container=document.getElementById('jadwalList'); if(!container)return;
+        const data=getJadwalData().sort((a,b)=>(dayOrder[a.hari]||9)-(dayOrder[b.hari]||9) || String(a.jamMulai).localeCompare(String(b.jamMulai)));
+        container.innerHTML='';
+        if(!data.length){
+            container.innerHTML=`<div class="col-span-full text-center py-10"><div class="text-2xl mb-2">📅</div><div class="text-xs font-semibold text-slate-300">Belum ada jadwal kuliah.</div><div class="text-[10px] text-slate-500 mt-1">Tambahkan jadwal agar tersusun otomatis berdasarkan hari dan jam.</div></div>`;
+            return;
+        }
+        data.forEach(item=>{
+            const card=document.createElement('div');
+            card.className='glass-panel p-4 rounded-2xl border border-white/10';
+            card.innerHTML=`<div class="flex items-center justify-between gap-2">
+                <span class="text-[9px] font-bold px-2 py-1 rounded-full btn-liquid text-white">${escapeHtml(item.hari)}</span>
+                <button onclick="deleteJadwal(${Number(item.id)})" class="w-8 h-8 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-white/5" aria-label="Hapus jadwal"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <h4 class="text-sm font-bold text-white mt-3">${escapeHtml(item.matkul)}</h4>
+            <p class="text-[11px] text-slate-300 mt-1"><i class="fa-regular fa-clock text-amber-400 mr-1"></i>${escapeHtml(item.jamMulai)}${item.jamSelesai?' – '+escapeHtml(item.jamSelesai):''}</p>
+            <p class="text-[11px] text-slate-400 mt-1"><i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>${escapeHtml(item.ruang||'Lokasi belum diatur')}</p>
+            <p class="text-[11px] text-slate-400"><i class="fa-solid fa-user-tie text-emerald-400 mr-1"></i>${escapeHtml(item.dosen||'Dosen belum diatur')}</p>`;
+            container.appendChild(card);
+        });
+    };
+    window.deleteJadwal=function(id){
+        if(!confirm('Hapus jadwal ini?'))return;
+        const current=getJadwalData().filter(x=>Number(x.id)!==Number(id));
+        saveJadwalData(current); showToast('Jadwal dihapus.');
+    };
+
+    // ---------- Calculator: keyboard + safe expression gate ----------
+    function sanitizeCalcExpression(expr){
+        const normalized=String(expr).replace(/×/g,'*').replace(/÷/g,'/').replace(/\s+/g,'');
+        if(!normalized || normalized.length>120) throw new Error('Ekspresi tidak valid');
+        if(!/^[0-9+\-*/().%]+$/.test(normalized)) throw new Error('Karakter tidak diizinkan');
+        if(/[*/%]{2,}/.test(normalized.replace(/\*\*/g,''))) throw new Error('Operator tidak valid');
+        return normalized;
+    }
+    window.calcEqual=function(){
+        const display=document.getElementById('calcDisplay');
+        try{
+            const expr=sanitizeCalcExpression(display.value);
+            const result=Function('"use strict";return ('+expr+')')();
+            if(!Number.isFinite(result)) throw new Error('Hasil tidak valid');
+            display.value=String(Number(result.toFixed(10)));
+        }catch{display.value='Error';}
+    };
+    window.calcFunc=function(fn){
+        const display=document.getElementById('calcDisplay');
+        try{
+            const val=Number(Function('"use strict";return ('+sanitizeCalcExpression(display.value||'0')+')')());
+            if(!Number.isFinite(val))throw 0;
+            const result={sin:Math.sin(val*Math.PI/180),cos:Math.cos(val*Math.PI/180),tan:Math.tan(val*Math.PI/180),sqrt:Math.sqrt(val),log:Math.log10(val),ln:Math.log(val),pow:Math.pow(val,2)}[fn];
+            if(result===undefined||!Number.isFinite(result))throw 0;
+            display.value=String(Number(result.toFixed(10)));
+        }catch{display.value='Error';}
+    };
+    document.addEventListener('keydown',e=>{
+        const tag=document.activeElement?.tagName;
+        if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT') return;
+        if(currentTab!=='math') return;
+        if(/^[0-9.]$/.test(e.key)||['+','-','*','/','(',')','%'].includes(e.key)){calcInput(e.key);e.preventDefault();}
+        else if(e.key==='Enter'||e.key==='='){calcEqual();e.preventDefault();}
+        else if(e.key==='Backspace'){calcBackspace();e.preventDefault();}
+        else if(e.key==='Escape'){document.getElementById('calcDisplay').value='0';}
+    });
+
+    // ---------- Wheel: deterministic animation ----------
+    window.spinWheel=function(){
+        if(isSpinning)return;
+        const items=getWheelItems(); if(items.length<2)return showToast('Masukkan minimal 2 pilihan.','error');
+        isSpinning=true; document.getElementById('spinBtn').disabled=true;
+        document.getElementById('wheelWinner').innerText='';
+        const start=wheelAngle, duration=3600, extra=(Math.PI*2)*(5+Math.random()*3)+Math.random()*(Math.PI*2);
+        const target=start+extra, startTime=performance.now();
+        function frame(now){
+            const p=Math.min(1,(now-startTime)/duration), eased=1-Math.pow(1-p,4);
+            wheelAngle=start+(target-start)*eased; drawWheel();
+            if(p<1) requestAnimationFrame(frame);
+            else{
+                isSpinning=false; document.getElementById('spinBtn').disabled=false;
+                determineWinner(); playTimerChimeSound();
+            }
+        }
+        requestAnimationFrame(frame);
+    };
+    window.determineWinner=function(){
+        const items=getWheelItems(), arc=(2*Math.PI)/items.length;
+        let angle=(Math.PI*1.5-(wheelAngle%(2*Math.PI)))%(2*Math.PI);
+        if(angle<0)angle+=2*Math.PI;
+        const index=Math.floor(angle/arc)%items.length;
+        document.getElementById('wheelWinner').innerText='Hasil undian: '+items[index];
+    };
+
+    // ---------- API key UX ----------
+    window.openApiModal=function(){
+        const input=document.getElementById('userApiKeyInput');
+        input.value=safeGetStorage('user_gemini_api_key')||'';
+        document.getElementById('apiModal').classList.remove('hidden');
+        setTimeout(()=>input.focus(),50);
+    };
+    window.saveApiKey=function(){
+        const val=document.getElementById('userApiKeyInput').value.trim();
+        if(val && !/^AIza[0-9A-Za-z_-]{20,}$/.test(val)) return showToast('Format API key tampaknya tidak valid.','error');
+        safeSetStorage('user_gemini_api_key',val);
+        closeApiModal();
+        showToast(val?'API key tersimpan di perangkat ini.':'API key dihapus dari perangkat ini.');
+    };
+
+    // ---------- Better copy + export ----------
+    window.copyOutputText=async function(){
+        const txt=document.getElementById('outputText').value;
+        if(!txt)return showToast('Tidak ada teks untuk disalin.','error');
+        try{await navigator.clipboard.writeText(txt);showToast('Teks disalin.');}
+        catch{showToast('Clipboard tidak tersedia di browser ini.','error');}
+    };
+    window.exportOutput=function(format){
+        const content=document.getElementById('outputText').value;
+        if(!content)return showToast('Tidak ada konten untuk diekspor.','error');
+        let mime='text/plain;charset=utf-8', ext='txt', body=content;
+        if(format==='md'){mime='text/markdown;charset=utf-8';ext='md';}
+        if(format==='doc'){mime='application/msword;charset=utf-8';ext='doc';body=`<!doctype html><html><head><meta charset="utf-8"></head><body>${document.getElementById('outputRendered').innerHTML}</body></html>`;}
+        const a=document.createElement('a'), url=URL.createObjectURL(new Blob([body],{type:mime}));
+        a.href=url;a.download=`StudentOS_${new Date().toISOString().slice(0,10)}.${ext}`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+        document.getElementById('exportMenu')?.classList.add('hidden');showToast(`File .${ext} berhasil dibuat.`);
+    };
+
+    // ---------- UX helpers ----------
+    document.addEventListener('click',e=>{
+        if(!e.target.closest('#themeDropdown')&&!e.target.closest('[onclick*="toggleThemeDropdown"]'))document.getElementById('themeDropdown')?.classList.add('hidden');
+        if(!e.target.closest('#exportMenu')&&!e.target.closest('[onclick*="toggleExportMenu"]'))document.getElementById('exportMenu')?.classList.add('hidden');
+    });
+    document.addEventListener('keydown',e=>{
+        if(e.key==='Escape'){
+            closeApiModal(); closeAddTaskModal();
+            document.getElementById('themeDropdown')?.classList.add('hidden');
+            document.getElementById('exportMenu')?.classList.add('hidden');
+            const aside=document.getElementById('studentSidebar');
+            if(aside?.classList.contains('mobile-open'))toggleMobileSidebar();
+        }
+    });
+    document.addEventListener('DOMContentLoaded',()=>{
+        setupMobileNav();
+        restorePreferences();
+        document.querySelectorAll('header button, aside button, main button').forEach(b=>{
+            if(!b.getAttribute('aria-label') && !b.title) b.setAttribute('title',b.innerText.trim().replace(/\s+/g,' ').slice(0,80));
+        });
+        // Remove misleading demo/sample data from first-run task state.
+        if(!safeGetStorage('student_tasks_v10')) safeJsonSet('student_tasks_v10',[]);
+        const footer=document.querySelector('footer');
+        if(footer) footer.innerHTML=`Student OS v${APP_VERSION} &copy; 2026 — Built for focused academic work`;
+        const brand=document.querySelector('header h1');
+        if(brand) brand.innerHTML=`Student OS <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 font-bold">v${APP_VERSION}</span>`;
+        const desc=document.querySelector('header p');
+        if(desc) desc.innerHTML=`Academic Workspace <span class="text-slate-500">•</span> Local-first`;
+        // Add a subtle product status without clutter.
+        const headerRight=document.querySelector('header .max-w-7xl > .flex:last-child');
+        if(headerRight && !document.getElementById('appStatus')){
+            const s=document.createElement('div');s.id='appStatus';s.className='app-status hidden lg:flex';s.innerHTML='<span class="app-status-dot"></span> Siap digunakan';
+            headerRight.appendChild(s);
+        }
+    });
+})();
+</script>
+
+
+<!-- Student OS v11.1 Multi-AI + Unified Workspace Patch -->
+<style>
+  .tools-section-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;padding:.55rem .75rem;border-radius:14px;color:#94a3b8;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);cursor:pointer}
+  .tools-section-toggle:hover{background:rgba(255,255,255,.07);color:#fff}
+  .tools-section-body{display:flex;flex-direction:column;gap:.25rem}
+  .ai-provider-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .ai-provider-select{background:rgba(8,12,24,.75);border:1px solid rgba(255,255,255,.12);color:#e2e8f0;border-radius:12px;padding:6px 10px;font-size:11px;font-weight:700;outline:none}
+  .attachment-zone{border:1px dashed rgba(96,165,250,.45);background:linear-gradient(135deg,rgba(30,64,175,.10),rgba(124,58,237,.08));border-radius:18px;padding:14px;transition:.2s}
+  .attachment-zone.dragover{border-color:rgba(52,211,153,.9);background:rgba(16,185,129,.12)}
+  .attachment-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08);margin-top:8px}
+  .attachment-thumb{width:52px;height:52px;border-radius:12px;object-fit:cover;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none}
+  .attachment-thumb img{width:100%;height:100%;object-fit:cover}
+  .integration-card{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}
+  .integration-card:hover{background:rgba(255,255,255,.07)}
+  .developer-signature{font-size:10px;color:#64748b;text-align:center;padding:8px 4px}
+  @media(max-width:767px){.ai-provider-bar{width:100%}.ai-provider-select{flex:1;min-width:150px}.attachment-zone{padding:12px}}
+</style>
+<script>
+(function(){
+'use strict';
+const V='11.1';
+const AIKEYS={gemini:'studentos_ai_key_gemini',openai:'studentos_ai_key_openai',claude:'studentos_ai_key_claude'};
+const AIMODELS={gemini:'gemini-3-flash-preview',openai:'gpt-5.6-luna',claude:'claude-sonnet-5'};
+let selectedProvider=['gemini','openai','claude','offline'].includes(localStorage.getItem('studentos_ai_provider'))?localStorage.getItem('studentos_ai_provider'):'gemini';
+let attachment={file:null,name:'',mime:'',size:0,data:null,text:''};
+
+function toast(msg,type='success'){ if(typeof showToast==='function') showToast(msg,type); }
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function keyFor(p){return AIKEYS[p]}
+function getKey(p){return (safeGetStorage(keyFor(p))||'').trim()}
+function setKey(p,v){safeSetStorage(keyFor(p),v.trim())}
+
+function injectProviderUI(){
+  const badge=document.getElementById('engineBadge');
+  if(badge && !document.getElementById('aiProviderSelect')){
+    badge.removeAttribute('onclick');
+    badge.title='Pilih mesin AI';
+    badge.innerHTML=`<i class="fa-solid fa-microchip"></i><select id="aiProviderSelect" class="ai-provider-select" aria-label="Pilih mesin AI">
+      <option value="gemini">Gemini</option><option value="openai">GPT / OpenAI</option><option value="claude">Claude</option><option value="offline">Offline</option>
+    </select>`;
+    const s=document.getElementById('aiProviderSelect');
+    s.value=selectedProvider;
+    s.onchange=()=>{selectedProvider=s.value;localStorage.setItem('studentos_ai_provider',selectedProvider);updateProviderUI();};
+  }
+  const headerControls=document.querySelector('header .max-w-7xl > .flex:last-child');
+  if(headerControls && !document.getElementById('aiKeysBtn')){
+    const b=document.createElement('button'); b.id='aiKeysBtn'; b.className='glass-panel hover:bg-white/10 px-3.5 py-1.5 rounded-xl text-xs text-slate-200 transition font-medium flex items-center gap-1.5 border border-white/10';
+    b.innerHTML='<i class="fa-solid fa-sliders text-cyan-400"></i><span>AI & Integrasi</span>'; b.onclick=openAiSettings;
+    headerControls.insertBefore(b,headerControls.firstChild);
+  }
+  updateProviderUI();
+}
+function updateProviderUI(){
+  const s=document.getElementById('aiProviderSelect'); if(s)s.value=selectedProvider;
+  const names={gemini:'Gemini AI',openai:'GPT / OpenAI',claude:'Claude',offline:'Offline'};
+  const badgeText=document.getElementById('engineBadgeText'); if(badgeText) badgeText.textContent=names[selectedProvider]||'AI';
+  const ind=document.getElementById('aiIndicator'); if(ind) ind.innerHTML=`<i class="fa-solid fa-microchip"></i> Engine: ${names[selectedProvider]||'AI'}`;
+  const submit=document.getElementById('submitBtnText'); if(submit) submit.textContent=selectedProvider==='offline'?'Generate Offline':`Generate dengan ${names[selectedProvider]}`;
+  const status=document.getElementById('aiStatusTag'); if(status) status.textContent=selectedProvider==='offline'?'OFFLINE':'MULTI-AI';
+}
+
+function openAiSettings(){
+  let m=document.getElementById('multiAiModal');
+  if(!m){
+    m=document.createElement('div');m.id='multiAiModal';m.className='fixed inset-0 z-[90] hidden bg-black/70 backdrop-blur-sm items-center justify-center p-4';
+    m.innerHTML=`<div class="glass-panel w-full max-w-lg rounded-3xl p-5 border border-white/15 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between"><div><h3 class="text-sm font-bold text-white">AI & Integrasi</h3><p class="text-[10px] text-slate-400">Gunakan provider yang kamu punya aksesnya.</p></div><button id="closeMultiAi" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="grid grid-cols-1 gap-2">
+        <label class="text-[10px] text-slate-400">Gemini API Key<input id="keyGemini" type="password" class="w-full glass-input rounded-xl px-3 py-2 text-xs text-white mt-1" placeholder="AIza..." /></label>
+        <label class="text-[10px] text-slate-400">OpenAI API Key<input id="keyOpenai" type="password" class="w-full glass-input rounded-xl px-3 py-2 text-xs text-white mt-1" placeholder="sk-..." /></label>
+        <label class="text-[10px] text-slate-400">Claude API Key<input id="keyClaude" type="password" class="w-full glass-input rounded-xl px-3 py-2 text-xs text-white mt-1" placeholder="sk-ant-..." /></label>
+      </div>
+      <div class="flex items-center gap-2"><button id="saveMultiAi" class="btn-liquid flex-1 py-2.5 rounded-xl text-xs font-bold text-white">Simpan</button><button id="clearMultiAi" class="glass-panel px-4 py-2.5 rounded-xl text-xs text-slate-300">Hapus Key</button></div>
+      <div class="border-t border-white/10 pt-3 space-y-2"><div class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Integrasi</div>
+        <div class="integration-card"><div><b class="text-xs text-white">Canva</b><p class="text-[10px] text-slate-400">Buka alur desain Canva dari workspace.</p></div><button id="canvaConnect" class="glass-panel px-3 py-1.5 rounded-xl text-[10px] text-cyan-300">Buka Canva</button></div>
+        <div class="integration-card"><div><b class="text-xs text-white">OpenAI</b><p class="text-[10px] text-slate-400">API provider untuk GPT.</p></div><span class="text-[10px] text-slate-500">API</span></div>
+        <div class="text-[10px] text-amber-300/80 leading-relaxed">Untuk APK publik, API key sebaiknya dipindahkan ke backend/proxy. Menaruh key langsung di HTML/APK memungkinkan key diekstrak.</div>
+      </div>
+    </div>`;
+    document.body.appendChild(m);
+    m.querySelector('#closeMultiAi').onclick=()=>m.classList.add('hidden');
+    m.querySelector('#saveMultiAi').onclick=()=>{setKey('gemini',m.querySelector('#keyGemini').value);setKey('openai',m.querySelector('#keyOpenai').value);setKey('claude',m.querySelector('#keyClaude').value);m.classList.add('hidden');toast('Konfigurasi AI disimpan.');};
+    m.querySelector('#clearMultiAi').onclick=()=>{['gemini','openai','claude'].forEach(p=>setKey(p,''));m.querySelector('#keyGemini').value='';m.querySelector('#keyOpenai').value='';m.querySelector('#keyClaude').value='';toast('API key lokal dihapus.');};
+    m.querySelector('#canvaConnect').onclick=()=>window.open('https://www.canva.com/','_blank','noopener,noreferrer');
+    m.addEventListener('click',e=>{if(e.target===m)m.classList.add('hidden')});
+  }
+  m.querySelector('#keyGemini').value=getKey('gemini');m.querySelector('#keyOpenai').value=getKey('openai');m.querySelector('#keyClaude').value=getKey('claude');
+  m.classList.remove('hidden');m.classList.add('flex');
+}
+
+async function loadScript(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
+async function extractAttachment(file){
+  const mime=file.type;
+  if(mime.startsWith('image/')) return {kind:'image',data:await fileToBase64(file),mime};
+  if(mime==='text/plain'||mime==='text/markdown'||mime==='text/csv'||mime==='application/json') return {kind:'text',text:await file.text()};
+  if(mime==='application/pdf'){
+    if(!window.pdfjsLib) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js').catch(()=>{});
+    if(!window.pdfjsLib) throw new Error('PDF parser belum tersedia.');
+    const buf=await file.arrayBuffer();const pdf=await window.pdfjsLib.getDocument({data:buf}).promise;let out='';
+    for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const tc=await page.getTextContent();out+=tc.items.map(x=>x.str).join(' ')+'\n';}
+    return {kind:'text',text:out};
+  }
+  if(mime==='application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
+    if(!window.mammoth) await loadScript('https://unpkg.com/mammoth@1.9.1/mammoth.browser.min.js');
+    const r=await window.mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()}); return {kind:'text',text:r.value};
+  }
+  throw new Error('Format belum didukung. Gunakan gambar, PDF, DOCX, TXT, MD, CSV, atau JSON.');
+}
+function fileToBase64(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result.split(',')[1]);r.onerror=reject;r.readAsDataURL(file)})}
+function resetAttachment(){attachment={file:null,name:'',mime:'',size:0,data:null,text:''};const z=document.getElementById('attachmentPreview');if(z)z.innerHTML='';const i=document.getElementById('unifiedAttachment');if(i)i.value='';}
+async function acceptFile(file){
+  if(!file)return; if(file.size>6*1024*1024)throw new Error('Ukuran file maksimal 6 MB.');
+  const a=await extractAttachment(file); attachment={file,name:file.name,mime:file.type,size:file.size,data:a.data||null,text:a.text||''};
+  renderAttachment(); toast('Dokumen/foto siap dipakai modul ini.');
+}
+function renderAttachment(){const z=document.getElementById('attachmentPreview');if(!z)return;const icon=attachment.mime.startsWith('image/')?'fa-image':attachment.mime==='application/pdf'?'fa-file-pdf':'fa-file-lines';z.innerHTML=`<div class="attachment-card"><div class="attachment-thumb">${attachment.data?`<img src="data:${esc(attachment.mime)};base64,${attachment.data}" alt="Preview lampiran">`:`<i class="fa-solid ${icon} text-xl text-cyan-300"></i>`}</div><div class="min-w-0 flex-1"><div class="text-xs font-semibold text-white truncate">${esc(attachment.name)}</div><div class="text-[10px] text-slate-400">${(attachment.size/1024/1024).toFixed(2)} MB · ${esc(attachment.mime||'dokumen')}</div></div><button type="button" id="removeAttachment" class="text-slate-400 hover:text-rose-400" title="Hapus lampiran"><i class="fa-solid fa-xmark"></i></button></div>`;z.querySelector('#removeAttachment').onclick=resetAttachment}
+function injectAttachment(){
+  const container=document.getElementById('dynamicInputs');if(!container)return;
+  document.getElementById('unifiedAttachmentWrap')?.remove();
+  const old=document.getElementById('input_imageFile'); if(old){(old.closest('.space-y-4,.space-y-3,.space-y-2,.space-y-1\.5')||old.parentElement)?.remove();}
+  const wrap=document.createElement('div');wrap.id='unifiedAttachmentWrap';wrap.className='attachment-zone';
+  wrap.innerHTML=`<div class="flex items-center gap-2"><i class="fa-solid fa-paperclip text-cyan-300"></i><div><div class="text-xs font-bold text-white">Lampiran untuk modul ini</div><div class="text-[10px] text-slate-400">Foto, PDF, DOCX, TXT, MD, CSV, atau JSON · maks. 6 MB</div></div></div><div class="flex gap-2 mt-3"><label class="btn-liquid px-3 py-2 rounded-xl text-[10px] font-bold text-white cursor-pointer"><i class="fa-solid fa-upload"></i> Pilih File<input id="unifiedAttachment" type="file" class="hidden" accept="image/*,.pdf,.docx,.txt,.md,.csv,.json"></label><button type="button" id="clearAttachment" class="glass-panel px-3 py-2 rounded-xl text-[10px] text-slate-300">Hapus</button></div><div id="attachmentPreview"></div>`;
+  container.appendChild(wrap);
+  const input=wrap.querySelector('#unifiedAttachment');input.onchange=async e=>{try{await acceptFile(e.target.files?.[0])}catch(err){toast(err.message,'error');e.target.value=''}};
+  wrap.ondragover=e=>{e.preventDefault();wrap.classList.add('dragover')};wrap.ondragleave=()=>wrap.classList.remove('dragover');wrap.ondrop=async e=>{e.preventDefault();wrap.classList.remove('dragover');try{await acceptFile(e.dataTransfer.files?.[0])}catch(err){toast(err.message,'error')}};
+  wrap.querySelector('#clearAttachment').onclick=resetAttachment;
+}
+
+function safeMarkdown(md){const html=marked.parse(String(md||''));return window.DOMPurify?DOMPurify.sanitize(html,{USE_PROFILES:{html:true}}):html.replace(/<script[\s\S]*?<\/script>/gi,'');}
+async function fetchWithTimeout(url,options={},timeout=45000){const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeout);try{return await fetch(url,{...options,signal:controller.signal})}catch(e){if(e.name==='AbortError')throw new Error('Permintaan AI melewati batas waktu 45 detik. Periksa koneksi atau coba lagi.');throw e}finally{clearTimeout(timer)}}
+
+function buildPrompt(config,formData){let p=`Modul Akademik: ${config.title}\nDetail Input User:\n${JSON.stringify(formData,null,2)}`;if(attachment.text)p+=`\n\n<DOKUMEN_LAMPIRAN>\n${attachment.text.slice(0,120000)}\n</DOKUMEN_LAMPIRAN>`;if(attachment.name)p+=`\n\nLampiran: ${attachment.name}`;return p}
+async function callProvider(provider,config,prompt){
+  if(provider==='offline') return {text:config.offlineGenerator({...currentFormData})};
+  const runtime=window.STUDENT_OS_RUNTIME||{};
+  // Public deployment: prefer same-origin backend so provider secrets never reach the browser.
+  if(runtime.backendUrl){
+    const payload={provider,model:AIMODELS[provider],systemPrompt:config.sysPrompt,prompt,attachment:attachment.data?{name:attachment.name,mime:attachment.mime,data:attachment.data,text:attachment.text}:null};
+    const res=await fetchWithTimeout(runtime.backendUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const j=await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(j.error||`Backend AI HTTP ${res.status}`);
+    return {text:j.text||'',sources:j.sources||[]};
+  }
+  // BYOK fallback for self-hosted/static deployments without a backend. Keys remain local to this browser.
+  const key=getKey(provider);if(!key)throw new Error(`API key ${provider.toUpperCase()} belum diatur. Untuk deployment publik, konfigurasi backend AI.`);
+  if(provider==='gemini'){
+    const payload={contents:[{parts:[{text:prompt}]}],systemInstruction:{parts:[{text:config.sysPrompt}]}};
+    if(attachment.data&&attachment.mime.startsWith('image/')) payload.contents[0].parts.push({inlineData:{mimeType:attachment.mime,data:attachment.data}});
+    if(isSearchGrounding&&currentTab!=='vision')payload.tools=[{google_search:{}}];
+    const res=await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(AIMODELS.gemini)}:generateContent?key=${encodeURIComponent(key)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const j=await res.json();if(!res.ok)throw new Error(j.error?.message||`Gemini HTTP ${res.status}`);return {text:j.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join('')||'',sources:j.candidates?.[0]?.groundingMetadata?.groundingAttributions||[]};
+  }
+  if(provider==='openai'){
+    const content=[{type:'input_text',text:`${config.sysPrompt}\n\n${prompt}`}];if(attachment.data&&attachment.mime.startsWith('image/'))content.push({type:'input_image',image_url:`data:${attachment.mime};base64,${attachment.data}`});
+    const res=await fetchWithTimeout('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({model:AIMODELS.openai,input:[{role:'user',content}]} )});const j=await res.json();if(!res.ok)throw new Error(j.error?.message||`OpenAI HTTP ${res.status}`);return {text:j.output_text||j.output?.flatMap(x=>x.content||[]).map(x=>x.text||'').join('')||''};
+  }
+  if(provider==='claude'){
+    const content=[{type:'text',text:`${config.sysPrompt}\n\n${prompt}`}];if(attachment.data&&attachment.mime.startsWith('image/'))content.push({type:'image',source:{type:'base64',media_type:attachment.mime,data:attachment.data}});
+    const res=await fetchWithTimeout('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:AIMODELS.claude,max_tokens:4096,messages:[{role:'user',content}]})});const j=await res.json();if(!res.ok)throw new Error(j.error?.message||`Claude HTTP ${res.status}`);return {text:(j.content||[]).map(x=>x.text||'').join('')};
+  }
+  throw new Error('Provider AI tidak dikenal.');
+}
+let currentFormData={};
+const oldSwitch=window.switchTab;
+window.switchTab=function(tabKey){
+  if(!tabConfigs[tabKey])return;
+  resetAttachment();oldSwitch(tabKey);injectAttachment();updateProviderUI();
+  if(window.innerWidth<768){const aside=document.getElementById('studentSidebar');if(aside?.classList.contains('mobile-open'))toggleMobileSidebar();}
+};
+window.executeAction=async function(){
+  const config=tabConfigs[currentTab];if(!config)return;
+  currentFormData={};let error=false;
+  config.inputs.forEach(inp=>{if(inp.id==='imageFile')return;const el=document.getElementById(`input_${inp.id}`);const v=el?.value?.trim()||'';currentFormData[inp.id]=v;const primary=['jurusan','topikSkripsi','queryResearch','visionPrompt','teksAsli','topik','soalUjian','teksAwal','materi'];if(primary.includes(inp.id)&&!v&&!attachment.text&&!attachment.data){el?.classList.add('field-error');error=true;setTimeout(()=>el?.classList.remove('field-error'),1500)}});
+  if(error){toast('Lengkapi input utama atau lampirkan dokumen/foto terlebih dahulu.','error');return;}
+  const btn=document.getElementById('submitBtn');if(btn?.dataset.busy==='1')return;if(btn){btn.dataset.busy='1';btn.disabled=true;btn.classList.add('opacity-70','cursor-wait')}
+  const loading=document.getElementById('loadingBox'),out=document.getElementById('outputSection'),raw=document.getElementById('outputText'),render=document.getElementById('outputRendered'),sources=document.getElementById('sourcesBox');
+  loading?.classList.remove('hidden');out?.classList.add('hidden');sources?.classList.add('hidden');
+  try{
+    if(selectedProvider==='offline'){raw.value=config.offlineGenerator(currentFormData);render.innerHTML=safeMarkdown(raw.value);out.classList.remove('hidden');toast('Output Offline selesai.');return;}
+    const result=await callProvider(selectedProvider,config,buildPrompt(config,currentFormData));
+    if(!result.text)throw new Error('Provider mengembalikan output kosong.');
+    raw.value=result.text;render.innerHTML=safeMarkdown(result.text);out.classList.remove('hidden');
+    const list=document.getElementById('sourcesList');list.innerHTML='';(result.sources||[]).map(a=>({uri:a.web?.uri,title:a.web?.title})).filter(x=>x.uri&&x.title).forEach(s=>{const li=document.createElement('li');li.innerHTML=`<a href="${esc(s.uri)}" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline font-medium">${esc(s.title)}</a>`;list.appendChild(li)});if(list.children.length)sources.classList.remove('hidden');
+    toast(`Selesai dengan ${selectedProvider==='openai'?'GPT / OpenAI':selectedProvider==='claude'?'Claude':'Gemini'}.`);
+  }catch(err){console.error(err);toast(err.message||'AI gagal memproses permintaan.','error');
+    try{raw.value=`## AI tidak berhasil memproses permintaan\n\n${err.message}\n\nSilakan periksa API key, koneksi internet, atau pilih **Offline** untuk membuat draf lokal.`;render.innerHTML=safeMarkdown(raw.value);out.classList.remove('hidden')}catch{}
+  }finally{loading?.classList.add('hidden');if(btn){btn.dataset.busy='0';btn.disabled=false;btn.classList.remove('opacity-70','cursor-wait')}}
+};
+
+function makeToolsAccordion(){
+ const marker=[...document.querySelectorAll('aside > div')].find(x=>x.textContent.trim()==='Tools Mahasiswa Interaktif');if(!marker||marker.dataset.upgraded)return;marker.dataset.upgraded='1';
+ const toggle=document.createElement('button');toggle.className='tools-section-toggle';toggle.type='button';toggle.innerHTML='<span><i class="fa-solid fa-toolbox mr-2"></i>Tools Mahasiswa Interaktif</span><i id="toolsChevron" class="fa-solid fa-chevron-down"></i>';
+ const body=document.createElement('div');body.className='tools-section-body';
+ let n=marker.nextElementSibling;while(n){const next=n.nextElementSibling;if(n.matches('button.nav-btn'))body.appendChild(n);else break;n=next;}
+ marker.replaceWith(toggle);toggle.after(body);toggle.onclick=()=>{const open=body.classList.toggle('hidden');document.getElementById('toolsChevron').className=open?'fa-solid fa-chevron-right':'fa-solid fa-chevron-down'};
+}
+function addDeveloperSignature(){const footer=document.querySelector('footer');if(footer)footer.innerHTML=`Student OS v12.4 Production Academic Workspace &copy; 2026 — Developed by <span class="text-slate-100 font-bold">Rizky Khoilillu Rochman</span>`;}
+
+document.addEventListener('DOMContentLoaded',()=>{injectProviderUI();makeToolsAccordion();addDeveloperSignature();setTimeout(()=>{if(typeof currentTab!=='undefined')window.switchTab(currentTab)},0)});
+})();
+</script>
+
+<!-- Student OS v12.0 Release / PWA / Security Patch -->
+<style>
+  .release-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:rgba(16,185,129,.09);border:1px solid rgba(52,211,153,.2);color:#a7f3d0;font-size:10px;font-weight:800}
+  .install-banner{position:fixed;left:16px;right:16px;bottom:16px;z-index:120;display:none;gap:12px;align-items:center;justify-content:space-between;padding:14px;border-radius:18px;background:rgba(9,14,28,.94);border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 60px rgba(0,0,0,.35);backdrop-filter:blur(18px)}
+  .install-banner.show{display:flex}
+  .security-note{font-size:10px;line-height:1.55;color:#94a3b8}
+  @media(max-width:767px){.install-banner{flex-direction:column;align-items:stretch}.install-banner .actions{display:flex}}
+</style>
+<script>
+(function(){
+'use strict';
+const RELEASE='12.4';
+const KEY='studentos_release_v12';
+function q(id){return document.getElementById(id)}
+function notify(msg,type='success'){try{showToast(msg,type)}catch{}}
+function upgradeBrand(){
+  document.title='Student OS v12.4 — Academic Workspace | Rizky Khoilillu Rochman';
+  const h=document.querySelector('header h1'); if(h){h.innerHTML=`Student OS <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 font-bold">v${RELEASE}</span>`}
+  const p=document.querySelector('header p'); if(p)p.innerHTML='Academic Workspace <span class="text-slate-500">•</span> Developed by <span class="text-slate-200 font-semibold">Rizky Khoilillu Rochman</span>';
+  const f=document.querySelector('footer'); if(f)f.innerHTML=`Student OS v${RELEASE} &copy; 2026 — Developed by <span class="text-slate-100 font-bold">Rizky Khoilillu Rochman</span>`;
+}
+function installUI(){
+  if(q('pwaInstallBanner'))return;
+  const b=document.createElement('div');b.id='pwaInstallBanner';b.className='install-banner';b.innerHTML=`<div><div class="text-xs font-bold text-white">Install Student OS</div><div class="text-[10px] text-slate-400 mt-1">Tambahkan ke layar utama untuk pengalaman seperti aplikasi.</div></div><div class="actions gap-2"><button id="pwaInstall" class="btn-liquid px-3 py-2 rounded-xl text-[10px] font-bold text-white">Install</button><button id="pwaClose" class="glass-panel px-3 py-2 rounded-xl text-[10px] text-slate-300">Nanti</button></div>`;document.body.appendChild(b);
+  let deferred=null;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;b.classList.add('show')});
+  q('pwaInstall').onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;b.classList.remove('show')};
+  q('pwaClose').onclick=()=>b.classList.remove('show');
+}
+function hardenStorage(){
+  // Avoid storing sensitive provider keys under an obvious single object name.
+  // The app still cannot make browser localStorage a secure vault; public APKs should use a backend.
+  window.StudentOSSecurity={release:RELEASE,localKeyWarning:true};
+}
+function addReleaseStatus(){
+  const right=document.querySelector('header .max-w-7xl > .flex:last-child');
+  if(right && !q('releasePill')){const x=document.createElement('span');x.id='releasePill';x.className='release-pill hidden lg:inline-flex';x.innerHTML='<i class="fa-solid fa-shield-halved"></i> Release Ready';right.appendChild(x)}
+}
+window.StudentOSRelease={version:RELEASE,clearLocalData(){try{const prefixes=['studentos_','studentos-ai-','studentos_v'];Object.keys(localStorage).filter(k=>prefixes.some(p=>k.startsWith(p))).forEach(k=>localStorage.removeItem(k));location.reload()}catch{}}};
+document.addEventListener('DOMContentLoaded',()=>{upgradeBrand();hardenStorage();addReleaseStatus();});
+})();
+</script>
+<script src="runtime-config.js"></script>
+
+<!-- Student OS v12.4 Production Web Release Patch -->
+<style>
+:root{--app-max:1440px}
+html{scroll-behavior:smooth}
+body{overflow-x:hidden}
+button,input,textarea,select{font:inherit}
+button:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
+.app-shell{width:min(100%,var(--app-max));margin-inline:auto}
+.release-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .55rem;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);font-size:10px;color:#cbd5e1}
+.install-banner{max-width:420px;left:50%;right:auto!important;transform:translate(-50%,140%);transition:transform .3s ease;z-index:80}
+.install-banner.show{transform:translate(-50%,0)}
+.workspace-drop-active{outline:2px solid rgba(56,189,248,.7);outline-offset:4px}
+.status-dot{width:7px;height:7px;border-radius:999px;background:#22c55e;box-shadow:0 0 12px rgba(34,197,94,.65)}
+.status-dot.offline{background:#94a3b8;box-shadow:none}
+.status-dot.busy{background:#f59e0b;box-shadow:0 0 12px rgba(245,158,11,.65);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.45}}
+.toast-error{border-color:rgba(239,68,68,.45)!important}
+@media(max-width:767px){.install-banner{width:calc(100% - 24px);bottom:12px}.release-chip{display:none}}
+</style>
+<script>
+(()=>{
+'use strict';
+const RELEASE='12.4';
+const STORE='studentos_v12_4_';
+const $=s=>document.querySelector(s);
+const get=(k,d='')=>{try{return localStorage.getItem(STORE+k)??d}catch{return d}};
+const set=(k,v)=>{try{localStorage.setItem(STORE+k,v)}catch{}};
+
+// Professional app status
+function setBusy(on){
+  const btn=$('#generateBtn')||document.querySelector('[onclick*="executeAction"]');
+  if(btn){btn.disabled=on;btn.dataset.originalText??=btn.innerHTML;btn.innerHTML=on?'<i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Memproses…':btn.dataset.originalText}
+  const dot=$('#appStatusDot'), label=$('#appStatusLabel');
+  if(dot) dot.className='status-dot '+(on?'busy':'');
+  if(label) label.textContent=on?'Memproses':'Siap digunakan';
+}
+
+// Replace fragile toast behavior with consistent status feedback while preserving original function.
+const oldToast=window.toast||window.showToast;
+window.toast=function(msg,type='success'){
+  try{ if(typeof oldToast==='function') oldToast(msg,type); }catch{}
+  const t=$('#toastMessage'); if(t)t.textContent=msg;
+  const box=$('#toast'); if(box){box.classList.toggle('toast-error',type==='error');box.classList.remove('translate-y-24','opacity-0');setTimeout(()=>box.classList.add('translate-y-24','opacity-0'),3200)}
+};
+
+// Upgrade header with release + runtime state.
+function upgradeHeader(){
+ const h=document.querySelector('header'); if(!h||$('#appRuntimeStatus'))return;
+ const row=document.createElement('div'); row.id='appRuntimeStatus'; row.className='release-chip';
+ row.innerHTML='<span id="appStatusDot" class="status-dot"></span><span id="appStatusLabel">Siap digunakan</span><span class="opacity-40">•</span><span>Web Release '+RELEASE+'</span>';
+ const controls=h.querySelector('.max-w-7xl > div:last-child'); if(controls)controls.prepend(row);
+}
+
+// Global keyboard UX: Ctrl/Cmd+K focuses the active primary field; Escape closes overlays.
+document.addEventListener('keydown',e=>{
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){
+   e.preventDefault();
+   const active=document.querySelector('#dynamicInputs input:not([type=file]), #dynamicInputs textarea, #taskTitleInput');
+   active?.focus();
+ }
+ if(e.key==='Escape'){
+   document.querySelectorAll('[role="dialog"]:not(.hidden), .fixed.inset-0:not(.hidden)').forEach(x=>{if(!x.id?.includes('api'))x.classList.add('hidden')});
+ }
+});
+
+// Unified drag/drop target: if the v11/v12 attachment area exists, make it forgiving.
+function setupDrop(){
+ const zone=document.querySelector('#unifiedAttachment, #workspaceAttachment, .attachment-zone'); if(!zone||zone.dataset.pro)return;
+ zone.dataset.pro='1';
+ ['dragenter','dragover'].forEach(ev=>zone.addEventListener(ev,e=>{e.preventDefault();zone.classList.add('workspace-drop-active')}));
+ ['dragleave','drop'].forEach(ev=>zone.addEventListener(ev,e=>{e.preventDefault();zone.classList.remove('workspace-drop-active')}));
+}
+
+// PWA install flow
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;const b=$('#pwaInstallBanner');b?.classList.add('show')});
+window.addEventListener('appinstalled',()=>{deferredPrompt=null;$('#pwaInstallBanner')?.classList.remove('show');toast('Student OS berhasil ditambahkan ke perangkat.')});
+function setupInstall(){
+ let b=$('#pwaInstallBanner');
+ if(!b){b=document.createElement('div');b.id='pwaInstallBanner';b.className='install-banner fixed bottom-4 glass-panel border border-white/10 rounded-2xl p-4 shadow-2xl';b.innerHTML='<div class="flex items-center justify-between gap-4"><div><div class="text-xs font-bold text-white">Install Student OS</div><div class="text-[10px] text-slate-400 mt-1">Gunakan seperti aplikasi tanpa membuka tab browser.</div></div><div class="flex gap-2"><button id="pwaInstall" class="btn-liquid px-3 py-2 rounded-xl text-[10px] font-bold">Install</button><button id="pwaClose" class="glass-panel px-3 py-2 rounded-xl text-[10px]">Nanti</button></div></div>';document.body.appendChild(b)}
+ $('#pwaInstall')?.addEventListener('click',async()=>{if(!deferredPrompt){toast('Browser ini belum menyediakan instalasi otomatis. Gunakan menu Install/Add to Home Screen browser.','error');return}deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;b.classList.remove('show')});
+ $('#pwaClose')?.addEventListener('click',()=>b.classList.remove('show'));
+}
+
+// Service worker registration with visible failure handling.
+async function registerPwa(){
+ if(!('serviceWorker' in navigator))return;
+ try{await navigator.serviceWorker.register('./sw.js',{scope:'./'});set('sw','ready')}catch(e){console.warn('PWA registration failed',e);set('sw','error')}
+}
+
+// Network awareness
+function setupNetwork(){
+ const update=()=>{const offline=!navigator.onLine;const dot=$('#appStatusDot'),label=$('#appStatusLabel');if(dot&&!dot.classList.contains('busy'))dot.classList.toggle('offline',offline);if(label&&!dot?.classList.contains('busy'))label.textContent=offline?'Offline mode':'Siap digunakan'};
+ addEventListener('online',update);addEventListener('offline',update);update();
+}
+
+// Prevent accidental form navigation and surface uncaught runtime failures.
+addEventListener('error',e=>{console.error(e.error||e.message);if(e.error)toast('Terjadi kesalahan pada modul. Coba muat ulang halaman.','error')});
+addEventListener('unhandledrejection',e=>{console.error(e.reason);});
+
+// Wrap provider execution if available so users always get a clean busy state.
+if(typeof window.executeAction==='function'){
+ const base=window.executeAction;
+ window.executeAction=async function(...args){setBusy(true);try{return await base.apply(this,args)}finally{setBusy(false)}};
+}
+
+function boot(){
+ upgradeHeader();setupInstall();setupNetwork();setupDrop();registerPwa();
+ document.title='Student OS v'+RELEASE+' — Academic Workspace | Rizky Khoilillu Rochman';
+ const footer=document.querySelector('footer');if(footer)footer.innerHTML='Student OS v'+RELEASE+' © 2026 — Developed by <span class="text-slate-100 font-bold">Rizky Khoilillu Rochman</span>';
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+
+
+<!-- Student OS v12.4 final QA / UX patch -->
+<style>
+.field-error{border-color:rgba(248,113,113,.9)!important;box-shadow:0 0 0 3px rgba(248,113,113,.10)!important}
+.ai-provider-select{background:transparent;border:0;outline:0;color:inherit;font-size:10px;font-weight:700;cursor:pointer}
+.ai-provider-select option{background:#0f172a;color:#fff}
+</style>
+<script>
+(()=>{
+'use strict';
+function qa(){
+  document.querySelectorAll('button').forEach(b=>{if(!b.type)b.type='button';if(!b.getAttribute('aria-label')&&!b.textContent.trim()){const t=b.getAttribute('title');if(t)b.setAttribute('aria-label',t)}});
+  const modal=document.getElementById('multiAiModal');
+  if(modal&&!modal.dataset.qa){modal.dataset.qa='1';modal.addEventListener('click',e=>{if(e.target===modal){modal.classList.add('hidden');modal.classList.remove('flex')}})}
+  document.querySelectorAll('#pwaInstallBanner').forEach((el,i)=>{if(i)el.remove()});
+  const out=document.getElementById('outputRendered');if(out){out.setAttribute('aria-live','polite');out.setAttribute('aria-atomic','false')}
+}
+window.addEventListener('online',()=>{const l=document.getElementById('appStatusLabel');if(l&&!document.getElementById('appStatusDot')?.classList.contains('busy'))l.textContent='Siap digunakan'});
+window.addEventListener('offline',()=>{const l=document.getElementById('appStatusLabel');if(l&&!document.getElementById('appStatusDot')?.classList.contains('busy'))l.textContent='Offline mode'});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',qa);else qa();
+})();
+</script>
+</body>
+</html>

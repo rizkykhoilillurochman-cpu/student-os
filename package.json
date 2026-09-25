@@ -1,0 +1,16 @@
+{
+  "name": "student-os-academic-workspace",
+  "version": "12.4.0",
+  "private": false,
+  "description": "Student OS public web/PWA release by Rizky Khoilillu Rochman",
+  "scripts": {
+    "serve": "npx serve www",
+    "cap:sync": "npx cap sync",
+    "cap:open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/core": "latest",
+    "@capacitor/android": "latest",
+    "@capacitor/cli": "latest"
+  }
+}
