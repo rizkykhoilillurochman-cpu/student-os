@@ -269,8 +269,42 @@
         }
         .markdown-body th { background: rgba(255,255,255,0.05); font-weight: 600; }
     </style>
+<style>
+  #apiModal{display:none!important}
+  body.auth-locked > *:not(#studentAuthGate):not(script){pointer-events:none!important}
+  #studentAuthGate{z-index:9999}
+</style>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<script src="firebase-config.js"></script>
 </head>
 <body class="theme-sapphire min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white">
+
+<div id="studentAuthGate" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-4">
+  <div class="glass-panel w-full max-w-md rounded-[30px] p-6 border border-white/20 shadow-2xl space-y-5">
+    <div class="text-center space-y-2">
+      <div class="mx-auto w-16 h-16 rounded-2xl btn-liquid flex items-center justify-center text-3xl shadow-xl">🎓</div>
+      <h2 class="text-xl font-black text-white">Welcome to Student OS</h2>
+      <p class="text-xs text-slate-400">Login dulu untuk masuk ke workspace mahasiswa.</p>
+    </div>
+    <div class="space-y-2">
+      <button onclick="studentLoginGoogle()" class="w-full bg-white text-slate-900 py-3 rounded-2xl text-xs font-black flex items-center justify-center gap-2 shadow-lg"><i class="fa-brands fa-google"></i> Lanjut dengan Google</button>
+      <button onclick="studentLoginApple()" class="w-full bg-black border border-white/20 text-white py-3 rounded-2xl text-xs font-black flex items-center justify-center gap-2"><i class="fa-brands fa-apple"></i> Lanjut dengan Apple</button>
+    </div>
+    <div class="flex items-center gap-2 text-[10px] text-slate-500"><span class="h-px flex-1 bg-white/10"></span> atau email <span class="h-px flex-1 bg-white/10"></span></div>
+    <div class="space-y-2">
+      <input id="studentAuthEmail" type="email" autocomplete="email" placeholder="Email mahasiswa" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs text-white">
+      <input id="studentAuthPassword" type="password" autocomplete="current-password" placeholder="Password (min. 6 karakter)" class="w-full glass-input rounded-xl px-3.5 py-2.5 text-xs text-white">
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="studentLoginEmail('signin')" class="glass-panel py-2.5 rounded-xl text-xs font-bold text-white">Masuk Email</button>
+        <button onclick="studentLoginEmail('signup')" class="btn-liquid py-2.5 rounded-xl text-xs font-bold text-white">Daftar Email</button>
+      </div>
+    </div>
+    <p id="studentAuthStatus" class="text-center text-[10px] text-slate-500 leading-relaxed">Menyiapkan autentikasi...</p>
+    <p class="text-[9px] text-slate-600 text-center">Student OS • Developer: Rizky Khoilillu Rochman</p>
+  </div>
+</div>
+
+
 
     <div class="liquid-bg-container">
         <div class="liquid-blob blob-1"></div>
@@ -292,10 +326,10 @@
                             Student OS <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 font-bold">v12.4</span>
                         </h1>
                         <span id="engineBadge" class="text-[10px] px-2.5 py-0.5 rounded-full font-bold text-amber-300 border border-amber-500/40 bg-amber-950/40 flex items-center gap-1.5 cursor-pointer hover:scale-105 transition" onclick="toggleAiMode()" title="Klik untuk beralih mode AI/Offline">
-                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> <span id="engineBadgeText">Gemini 3 Flash AI</span>
+                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> <span id="engineBadgeText">Gemini AI</span>
                         </span>
                     </div>
-                    <p class="text-[11px] text-slate-400">Multi-AI Academic Workspace &bull; Developed by <span class="text-slate-200 font-semibold">Rizky Khoilillu Rochman</span></p>
+                    <p class="text-[11px] text-slate-400">Student Academic Workspace &bull; Developed by <span class="text-slate-200 font-semibold">Rizky Khoilillu Rochman</span></p>
                 </div>
             </div>
 
@@ -307,12 +341,7 @@
                     <span id="groundingLabel">Google Search: ON</span>
                 </button>
 
-                <!-- Gemini API Key Config -->
-                <button onclick="openApiModal()" class="glass-panel hover:bg-white/10 px-3.5 py-1.5 rounded-xl text-xs text-slate-200 transition font-medium flex items-center gap-1.5 border border-white/10">
-                    <i class="fa-solid fa-key text-amber-400"></i>
-                    <span>API Key</span>
-                </button>
-
+                <!-- AI is developer-managed through Firebase AI Logic; no user API key required. -->
                 <!-- Fluid Theme Switcher -->
                 <div class="relative inline-block text-left">
                     <button onclick="toggleThemeDropdown()" class="glass-panel hover:bg-white/10 px-3.5 py-1.5 rounded-xl text-xs text-slate-200 transition font-medium flex items-center gap-2 border border-white/10">
@@ -1307,7 +1336,78 @@ Kelompok 5 - Siti</textarea>
             } else if (format === 'doc') {
                 mimeType = 'application/msword';
                 extension = 'doc';
-                fileContent = `<html><head><meta charset='utf-8'></head><body>${document.getElementById('outputRendered').innerHTML}</body></html>`;
+                fileContent = `<html><head><meta charset='utf-8'></head><body>${document.getElementById('outputRendered').innerHTML}<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
+
+const cfg=window.FIREBASE_CONFIG||{};
+const gate=document.getElementById('studentAuthGate');
+const statusEl=document.getElementById('studentAuthStatus');
+window.studentFirebase={app:null,auth:null,currentUser:null,model:null,appCheck:null,configured:false};
+
+function setStatus(msg){if(statusEl)statusEl.textContent=msg;}
+function valid(c){return ['apiKey','authDomain','projectId','appId'].every(k=>typeof c[k]==='string'&&c[k]&&!c[k].startsWith('PASTE_'))}
+function showGate(v){document.body.classList.toggle('auth-locked',v);gate?.classList.toggle('hidden',!v);}
+
+function authError(e){
+ const m={
+ 'auth/popup-closed-by-user':'Login dibatalkan.',
+ 'auth/popup-blocked':'Popup login diblokir browser. Izinkan popup untuk situs ini.',
+ 'auth/unauthorized-domain':'Domain ini belum ditambahkan ke Authorized Domains Firebase.',
+ 'auth/operation-not-allowed':'Provider login belum diaktifkan di Firebase.',
+ 'auth/email-already-in-use':'Email sudah terdaftar.',
+ 'auth/invalid-credential':'Email atau password tidak valid.',
+ 'auth/invalid-email':'Format email tidak valid.',
+ 'auth/weak-password':'Password minimal 6 karakter.'
+ }; return m[e?.code]||e?.message||'Login gagal.';
+}
+async function loginGoogle(){
+ if(!window.studentFirebase.auth)return setStatus('Firebase belum siap.');
+ setStatus('Membuka login Google...');
+ try{const p=new GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});if(matchMedia('(max-width: 768px)').matches)await signInWithRedirect(window.studentFirebase.auth,p);else await signInWithPopup(window.studentFirebase.auth,p);}catch(e){setStatus(authError(e))}
+}
+async function loginApple(){
+ if(!window.studentFirebase.auth)return setStatus('Firebase belum siap.');
+ setStatus('Membuka login Apple...');
+ try{const p=new OAuthProvider('apple.com');p.addScope('email');p.addScope('name');if(matchMedia('(max-width: 768px)').matches)await signInWithRedirect(window.studentFirebase.auth,p);else await signInWithPopup(window.studentFirebase.auth,p);}catch(e){setStatus(authError(e))}
+}
+async function loginEmail(mode){
+ if(!window.studentFirebase.auth)return setStatus('Firebase belum siap.');
+ const email=document.getElementById('studentAuthEmail')?.value.trim();const pw=document.getElementById('studentAuthPassword')?.value;
+ if(!email||!pw)return setStatus('Email dan password wajib diisi.');
+ setStatus(mode==='signup'?'Membuat akun email...':'Memproses login email...');
+ try{if(mode==='signup')await createUserWithEmailAndPassword(window.studentFirebase.auth,email,pw);else await signInWithEmailAndPassword(window.studentFirebase.auth,email,pw);}catch(e){setStatus(authError(e))}
+}
+window.studentLoginGoogle=loginGoogle;window.studentLoginApple=loginApple;window.studentLoginEmail=loginEmail;
+
+try{
+ showGate(true);
+ if(!valid(cfg)){setStatus('Firebase belum dikonfigurasi oleh developer. Login dikunci sampai config Firebase aktif.');}
+ else{
+   const app=initializeApp(cfg);
+   const auth=getAuth(app);
+   window.studentFirebase.app=app;window.studentFirebase.auth=auth;window.studentFirebase.configured=true;
+   try{
+     if(cfg.appCheckSiteKey&&!String(cfg.appCheckSiteKey).startsWith('PASTE_')){
+       window.studentFirebase.appCheck=initializeAppCheck(app,{provider:new ReCaptchaEnterpriseProvider(cfg.appCheckSiteKey),isTokenAutoRefreshEnabled:true});
+     }
+     const ai=getAI(app,{backend:new GoogleAIBackend()});
+     window.studentFirebase.model=getGenerativeModel(ai,{model:'gemini-3.8-flash'});
+   }catch(e){console.warn('Firebase AI Logic init failed',e)}
+   getRedirectResult(auth).catch(e=>setStatus(authError(e)));
+   onAuthStateChanged(auth,user=>{
+     window.studentFirebase.currentUser=user||null;
+     if(user){
+       showGate(false);setStatus('Login berhasil.');
+       safeSetStorage('studentos_user_profile',JSON.stringify({name:user.displayName||'Mahasiswa',email:user.email||'',uid:user.uid,provider:user.providerData?.[0]?.providerId||''}));
+     }else{showGate(true);setStatus('Silakan login untuk melanjutkan.')}
+   });
+ }
+}catch(e){showGate(true);setStatus('Inisialisasi Firebase gagal. Periksa konfigurasi project.')}
+</script>
+</body></html>`;
             }
 
             const blob = new Blob([fileContent], { type: mimeType });
@@ -2556,10 +2656,10 @@ Kelompok 5 - Siti</textarea>
 <script>
 (function(){
 'use strict';
-const V='11.1';
+const V='14.5';
 const AIKEYS={gemini:'studentos_ai_key_gemini',openai:'studentos_ai_key_openai',claude:'studentos_ai_key_claude'};
-const AIMODELS={gemini:'gemini-3-flash-preview',openai:'gpt-5.6-luna',claude:'claude-sonnet-5'};
-let selectedProvider=['gemini','openai','claude','offline'].includes(localStorage.getItem('studentos_ai_provider'))?localStorage.getItem('studentos_ai_provider'):'gemini';
+const AIMODELS={gemini:'gemini-3.8-flash'};
+let selectedProvider='gemini';
 let attachment={file:null,name:'',mime:'',size:0,data:null,text:''};
 
 function toast(msg,type='success'){ if(typeof showToast==='function') showToast(msg,type); }
@@ -2574,7 +2674,7 @@ function injectProviderUI(){
     badge.removeAttribute('onclick');
     badge.title='Pilih mesin AI';
     badge.innerHTML=`<i class="fa-solid fa-microchip"></i><select id="aiProviderSelect" class="ai-provider-select" aria-label="Pilih mesin AI">
-      <option value="gemini">Gemini</option><option value="openai">GPT / OpenAI</option><option value="claude">Claude</option><option value="offline">Offline</option>
+      <option value="gemini">Gemini AI</option>
     </select>`;
     const s=document.getElementById('aiProviderSelect');
     s.value=selectedProvider;
@@ -2590,7 +2690,7 @@ function injectProviderUI(){
 }
 function updateProviderUI(){
   const s=document.getElementById('aiProviderSelect'); if(s)s.value=selectedProvider;
-  const names={gemini:'Gemini AI',openai:'GPT / OpenAI',claude:'Claude',offline:'Offline'};
+  const names={gemini:'Gemini AI'};
   const badgeText=document.getElementById('engineBadgeText'); if(badgeText) badgeText.textContent=names[selectedProvider]||'AI';
   const ind=document.getElementById('aiIndicator'); if(ind) ind.innerHTML=`<i class="fa-solid fa-microchip"></i> Engine: ${names[selectedProvider]||'AI'}`;
   const submit=document.getElementById('submitBtnText'); if(submit) submit.textContent=selectedProvider==='offline'?'Generate Offline':`Generate dengan ${names[selectedProvider]}`;
@@ -2602,30 +2702,28 @@ function openAiSettings(){
   if(!m){
     m=document.createElement('div');m.id='multiAiModal';m.className='fixed inset-0 z-[90] hidden bg-black/70 backdrop-blur-sm items-center justify-center p-4';
     m.innerHTML=`<div class="glass-panel w-full max-w-lg rounded-3xl p-5 border border-white/15 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between"><div><h3 class="text-sm font-bold text-white">AI & Integrasi</h3><p class="text-[10px] text-slate-400">Gunakan provider yang kamu punya aksesnya.</p></div><button id="closeMultiAi" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button></div>
-      <div class="grid grid-cols-1 gap-2">
-        <label class="text-[10px] text-slate-400">Gemini API Key<input id="keyGemini" type="password" class="w-full glass-input rounded-xl px-3 py-2 text-xs text-white mt-1" placeholder="AIza..." /></label>
-        <label class="text-[10px] text-slate-400">OpenAI API Key<input id="keyOpenai" type="password" class="w-full glass-input rounded-xl px-3 py-2 text-xs text-white mt-1" placeholder="sk-..." /></label>
-        <label class="text-[10px] text-slate-400">Claude API Key<input id="keyClaude" type="password" class="w-full glass-input rounded-xl px-3 py-2 text-xs text-white mt-1" placeholder="sk-ant-..." /></label>
+      <div class="flex items-center justify-between"><div><h3 class="text-sm font-bold text-white">AI & Integrasi</h3><p class="text-[10px] text-slate-400">Semua AI dikelola developer melalui Firebase AI Logic.</p></div><button id="closeMultiAi" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="rounded-2xl bg-emerald-950/30 border border-emerald-500/20 p-4 space-y-2">
+        <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><b class="text-xs text-emerald-300">Gemini AI aktif terkelola</b></div>
+        <p class="text-[11px] text-slate-300 leading-relaxed">Pengguna tidak perlu memasukkan, melihat, atau menyimpan API key Gemini. Login Firebase diperlukan sebelum AI digunakan.</p>
       </div>
-      <div class="flex items-center gap-2"><button id="saveMultiAi" class="btn-liquid flex-1 py-2.5 rounded-xl text-xs font-bold text-white">Simpan</button><button id="clearMultiAi" class="glass-panel px-4 py-2.5 rounded-xl text-xs text-slate-300">Hapus Key</button></div>
-      <div class="border-t border-white/10 pt-3 space-y-2"><div class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Integrasi</div>
-        <div class="integration-card"><div><b class="text-xs text-white">Canva</b><p class="text-[10px] text-slate-400">Buka alur desain Canva dari workspace.</p></div><button id="canvaConnect" class="glass-panel px-3 py-1.5 rounded-xl text-[10px] text-cyan-300">Buka Canva</button></div>
-        <div class="integration-card"><div><b class="text-xs text-white">OpenAI</b><p class="text-[10px] text-slate-400">API provider untuk GPT.</p></div><span class="text-[10px] text-slate-500">API</span></div>
-        <div class="text-[10px] text-amber-300/80 leading-relaxed">Untuk APK publik, API key sebaiknya dipindahkan ke backend/proxy. Menaruh key langsung di HTML/APK memungkinkan key diekstrak.</div>
+      <div class="space-y-2">
+        <div class="integration-card"><div><b class="text-xs text-white">Canva</b><p class="text-[10px] text-slate-400">Buka workspace Canva.</p></div><button id="canvaConnect" class="glass-panel px-3 py-1.5 rounded-xl text-[10px] text-cyan-300">Buka Canva</button></div>
+        <div class="integration-card"><div><b class="text-xs text-white">Google Drive</b><p class="text-[10px] text-slate-400">Buka Google Drive.</p></div><button id="driveConnect" class="glass-panel px-3 py-1.5 rounded-xl text-[10px] text-cyan-300">Buka Drive</button></div>
+        <div class="integration-card"><div><b class="text-xs text-white">Gmail</b><p class="text-[10px] text-slate-400">Buka Gmail.</p></div><button id="gmailConnect" class="glass-panel px-3 py-1.5 rounded-xl text-[10px] text-cyan-300">Buka Gmail</button></div>
+        <div class="integration-card"><div><b class="text-xs text-white">Microsoft Word</b><p class="text-[10px] text-slate-400">Buka Word Online.</p></div><button id="wordConnect" class="glass-panel px-3 py-1.5 rounded-xl text-[10px] text-cyan-300">Buka Word</button></div>
       </div>
     </div>`;
     document.body.appendChild(m);
     m.querySelector('#closeMultiAi').onclick=()=>m.classList.add('hidden');
-    m.querySelector('#saveMultiAi').onclick=()=>{setKey('gemini',m.querySelector('#keyGemini').value);setKey('openai',m.querySelector('#keyOpenai').value);setKey('claude',m.querySelector('#keyClaude').value);m.classList.add('hidden');toast('Konfigurasi AI disimpan.');};
-    m.querySelector('#clearMultiAi').onclick=()=>{['gemini','openai','claude'].forEach(p=>setKey(p,''));m.querySelector('#keyGemini').value='';m.querySelector('#keyOpenai').value='';m.querySelector('#keyClaude').value='';toast('API key lokal dihapus.');};
     m.querySelector('#canvaConnect').onclick=()=>window.open('https://www.canva.com/','_blank','noopener,noreferrer');
+    m.querySelector('#driveConnect').onclick=()=>window.open('https://drive.google.com/drive/my-drive','_blank','noopener,noreferrer');
+    m.querySelector('#gmailConnect').onclick=()=>window.open('https://mail.google.com/','_blank','noopener,noreferrer');
+    m.querySelector('#wordConnect').onclick=()=>window.open('https://www.office.com/launch/word','_blank','noopener,noreferrer');
     m.addEventListener('click',e=>{if(e.target===m)m.classList.add('hidden')});
   }
-  m.querySelector('#keyGemini').value=getKey('gemini');m.querySelector('#keyOpenai').value=getKey('openai');m.querySelector('#keyClaude').value=getKey('claude');
   m.classList.remove('hidden');m.classList.add('flex');
 }
-
 async function loadScript(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
 async function extractAttachment(file){
   const mime=file.type;
@@ -2669,33 +2767,19 @@ async function fetchWithTimeout(url,options={},timeout=45000){const controller=n
 
 function buildPrompt(config,formData){let p=`Modul Akademik: ${config.title}\nDetail Input User:\n${JSON.stringify(formData,null,2)}`;if(attachment.text)p+=`\n\n<DOKUMEN_LAMPIRAN>\n${attachment.text.slice(0,120000)}\n</DOKUMEN_LAMPIRAN>`;if(attachment.name)p+=`\n\nLampiran: ${attachment.name}`;return p}
 async function callProvider(provider,config,prompt){
-  if(provider==='offline') return {text:config.offlineGenerator({...currentFormData})};
-  const runtime=window.STUDENT_OS_RUNTIME||{};
-  // Public deployment: prefer same-origin backend so provider secrets never reach the browser.
-  if(runtime.backendUrl){
-    const payload={provider,model:AIMODELS[provider],systemPrompt:config.sysPrompt,prompt,attachment:attachment.data?{name:attachment.name,mime:attachment.mime,data:attachment.data,text:attachment.text}:null};
-    const res=await fetchWithTimeout(runtime.backendUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const j=await res.json().catch(()=>({}));
-    if(!res.ok) throw new Error(j.error||`Backend AI HTTP ${res.status}`);
-    return {text:j.text||'',sources:j.sources||[]};
+  if(provider!=='gemini') provider='gemini';
+  const user=window.studentFirebase?.currentUser;
+  const model=window.studentFirebase?.model;
+  if(!user) throw new Error('Silakan login terlebih dahulu.');
+  if(!model) throw new Error('Gemini AI belum siap. Periksa konfigurasi Firebase AI Logic dan App Check.');
+  const parts=[{text:`${config.sysPrompt}\\n\\n${prompt}`}];
+  if(attachment.data&&attachment.mime.startsWith('image/')){
+    parts.push({inlineData:{mimeType:attachment.mime,data:attachment.data}});
   }
-  // BYOK fallback for self-hosted/static deployments without a backend. Keys remain local to this browser.
-  const key=getKey(provider);if(!key)throw new Error(`API key ${provider.toUpperCase()} belum diatur. Untuk deployment publik, konfigurasi backend AI.`);
-  if(provider==='gemini'){
-    const payload={contents:[{parts:[{text:prompt}]}],systemInstruction:{parts:[{text:config.sysPrompt}]}};
-    if(attachment.data&&attachment.mime.startsWith('image/')) payload.contents[0].parts.push({inlineData:{mimeType:attachment.mime,data:attachment.data}});
-    if(isSearchGrounding&&currentTab!=='vision')payload.tools=[{google_search:{}}];
-    const res=await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(AIMODELS.gemini)}:generateContent?key=${encodeURIComponent(key)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const j=await res.json();if(!res.ok)throw new Error(j.error?.message||`Gemini HTTP ${res.status}`);return {text:j.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join('')||'',sources:j.candidates?.[0]?.groundingMetadata?.groundingAttributions||[]};
-  }
-  if(provider==='openai'){
-    const content=[{type:'input_text',text:`${config.sysPrompt}\n\n${prompt}`}];if(attachment.data&&attachment.mime.startsWith('image/'))content.push({type:'input_image',image_url:`data:${attachment.mime};base64,${attachment.data}`});
-    const res=await fetchWithTimeout('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({model:AIMODELS.openai,input:[{role:'user',content}]} )});const j=await res.json();if(!res.ok)throw new Error(j.error?.message||`OpenAI HTTP ${res.status}`);return {text:j.output_text||j.output?.flatMap(x=>x.content||[]).map(x=>x.text||'').join('')||''};
-  }
-  if(provider==='claude'){
-    const content=[{type:'text',text:`${config.sysPrompt}\n\n${prompt}`}];if(attachment.data&&attachment.mime.startsWith('image/'))content.push({type:'image',source:{type:'base64',media_type:attachment.mime,data:attachment.data}});
-    const res=await fetchWithTimeout('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:AIMODELS.claude,max_tokens:4096,messages:[{role:'user',content}]})});const j=await res.json();if(!res.ok)throw new Error(j.error?.message||`Claude HTTP ${res.status}`);return {text:(j.content||[]).map(x=>x.text||'').join('')};
-  }
-  throw new Error('Provider AI tidak dikenal.');
+  const result=await model.generateContent(parts);
+  const out=result?.response?.text?.()||'';
+  if(!out) throw new Error('Respon Gemini kosong.');
+  return {text:out,sources:[]};
 }
 let currentFormData={};
 const oldSwitch=window.switchTab;
