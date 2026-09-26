@@ -1,6 +1,6 @@
 // Student OS Firebase Web configuration.
 window.FIREBASE_CONFIG = {
-  apiKey: "PASTE_FIREBASE_WEB_API_KEY",
+  apiKey: "AIzaSyBdfWk9ZSJUUfOmrc2Bm9UqV0TYaVdKWqY  ",
   authDomain: "student-os-b0d4c.firebaseapp.com",
   projectId: "student-os-b0d4c",
   storageBucket: "student-os-b0d4c.firebasestorage.app",
