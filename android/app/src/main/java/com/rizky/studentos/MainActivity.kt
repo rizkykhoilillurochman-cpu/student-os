@@ -10,7 +10,7 @@ import android.webkit.*
 
 class MainActivity : Activity() {
     private lateinit var webView: WebView
-    private val startUrl = "https://rizkykhoilillurochman-cpu.github.io/student-os/"
+    private val startUrl = "https://cdn.jsdelivr.net/gh/rizkykhoilillurochman-cpu/student-os@main/index.html"
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
