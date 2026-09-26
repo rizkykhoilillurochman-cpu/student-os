@@ -7,8 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.webkit.*
-import androidx.webkit.WebSettingsCompat
-import androidx.webkit.WebViewFeature
 
 class MainActivity : Activity() {
     private lateinit var webView: WebView
@@ -31,10 +29,6 @@ class MainActivity : Activity() {
             setSupportMultipleWindows(false)
             mediaPlaybackRequiresUserGesture = true
             userAgentString = userAgentString + " StudentOSAndroid/14.5"
-        }
-
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-            WebSettingsCompat.setForceDark(webView.settings, WebSettingsCompat.FORCE_DARK_OFF)
         }
 
         webView.webViewClient = object : WebViewClient() {
