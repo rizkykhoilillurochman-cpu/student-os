@@ -13,7 +13,7 @@
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <title>Student OS v12.4 Production Academic Workspace - Dev by Rizky Khoilillu Rochman</title>
+    <title>Student OS v14.5 Production Academic Workspace - Dev by Rizky Khoilillu Rochman</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -288,7 +288,6 @@
     </div>
     <div class="space-y-2">
       <button onclick="studentLoginGoogle()" class="w-full bg-white text-slate-900 py-3 rounded-2xl text-xs font-black flex items-center justify-center gap-2 shadow-lg"><i class="fa-brands fa-google"></i> Lanjut dengan Google</button>
-      <button onclick="studentLoginApple()" class="w-full bg-black border border-white/20 text-white py-3 rounded-2xl text-xs font-black flex items-center justify-center gap-2"><i class="fa-brands fa-apple"></i> Lanjut dengan Apple</button>
     </div>
     <div class="flex items-center gap-2 text-[10px] text-slate-500"><span class="h-px flex-1 bg-white/10"></span> atau email <span class="h-px flex-1 bg-white/10"></span></div>
     <div class="space-y-2">
@@ -323,7 +322,7 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h1 class="font-black text-base tracking-tight text-white flex items-center gap-1.5">
-                            Student OS <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 font-bold">v12.4</span>
+                            Student OS <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 font-bold">v14.5</span>
                         </h1>
                         <span id="engineBadge" class="text-[10px] px-2.5 py-0.5 rounded-full font-bold text-amber-300 border border-amber-500/40 bg-amber-950/40 flex items-center gap-1.5 cursor-pointer hover:scale-105 transition" onclick="toggleAiMode()" title="Klik untuk beralih mode AI/Offline">
                             <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> <span id="engineBadgeText">Gemini AI</span>
@@ -444,7 +443,7 @@
             </button>
 
             <div class="mt-auto pt-3 border-t border-white/10 text-center">
-                <p class="text-[10px] text-slate-400">Student OS v12.4 Production Academic Workspace</p>
+                <p class="text-[10px] text-slate-400">Student OS v14.5 Production Academic Workspace</p>
                 <p class="text-[10px] text-slate-200 font-bold">Dev: Rizky Khoilillu Rochman</p>
             </div>
         </aside>
@@ -836,7 +835,7 @@ Kelompok 5 - Siti</textarea>
 
     <!-- Footer -->
     <footer class="border-t border-white/10 py-4 text-center text-xs text-slate-400">
-        Student OS v12.4 Production Academic Workspace &copy; 2026 — Designed & Built by <span class="text-slate-100 font-bold">Rizky Khoilillu Rochman</span>
+        Student OS v14.5 Production Academic Workspace &copy; 2026 — Designed & Built by <span class="text-slate-100 font-bold">Rizky Khoilillu Rochman</span>
     </footer>
 
     <script>
@@ -1338,7 +1337,7 @@ Kelompok 5 - Siti</textarea>
                 extension = 'doc';
                 fileContent = `<html><head><meta charset='utf-8'></head><body>${document.getElementById('outputRendered').innerHTML}<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvidersignInWithPopupsignInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
 
@@ -1368,10 +1367,6 @@ async function loginGoogle(){
  setStatus('Membuka login Google...');
  try{const p=new GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});if(matchMedia('(max-width: 768px)').matches)await signInWithRedirect(window.studentFirebase.auth,p);else await signInWithPopup(window.studentFirebase.auth,p);}catch(e){setStatus(authError(e))}
 }
-async function loginApple(){
- if(!window.studentFirebase.auth)return setStatus('Firebase belum siap.');
- setStatus('Membuka login Apple...');
- try{const p=new OAuthProvider('apple.com');p.addScope('email');p.addScope('name');if(matchMedia('(max-width: 768px)').matches)await signInWithRedirect(window.studentFirebase.auth,p);else await signInWithPopup(window.studentFirebase.auth,p);}catch(e){setStatus(authError(e))}
 }
 async function loginEmail(mode){
  if(!window.studentFirebase.auth)return setStatus('Firebase belum siap.');
@@ -1380,7 +1375,7 @@ async function loginEmail(mode){
  setStatus(mode==='signup'?'Membuat akun email...':'Memproses login email...');
  try{if(mode==='signup')await createUserWithEmailAndPassword(window.studentFirebase.auth,email,pw);else await signInWithEmailAndPassword(window.studentFirebase.auth,email,pw);}catch(e){setStatus(authError(e))}
 }
-window.studentLoginGoogle=loginGoogle;window.studentLoginApple=loginApple;window.studentLoginEmail=loginEmail;
+window.studentLoginGoogle=loginGoogle;window.studentLoginEmail=loginEmail;
 
 try{
  showGate(true);
@@ -2088,7 +2083,7 @@ try{
 (function(){
     'use strict';
 
-    const APP_VERSION = '11.0';
+    const APP_VERSION = '14.5';
     const STORAGE = {
         theme:'studentos_theme',
         ai:'studentos_ai_mode',
@@ -2815,7 +2810,7 @@ function makeToolsAccordion(){
  let n=marker.nextElementSibling;while(n){const next=n.nextElementSibling;if(n.matches('button.nav-btn'))body.appendChild(n);else break;n=next;}
  marker.replaceWith(toggle);toggle.after(body);toggle.onclick=()=>{const open=body.classList.toggle('hidden');document.getElementById('toolsChevron').className=open?'fa-solid fa-chevron-right':'fa-solid fa-chevron-down'};
 }
-function addDeveloperSignature(){const footer=document.querySelector('footer');if(footer)footer.innerHTML=`Student OS v12.4 Production Academic Workspace &copy; 2026 — Developed by <span class="text-slate-100 font-bold">Rizky Khoilillu Rochman</span>`;}
+function addDeveloperSignature(){const footer=document.querySelector('footer');if(footer)footer.innerHTML=`Student OS v14.5 Production Academic Workspace &copy; 2026 — Developed by <span class="text-slate-100 font-bold">Rizky Khoilillu Rochman</span>`;}
 
 document.addEventListener('DOMContentLoaded',()=>{injectProviderUI();makeToolsAccordion();addDeveloperSignature();setTimeout(()=>{if(typeof currentTab!=='undefined')window.switchTab(currentTab)},0)});
 })();
@@ -2837,7 +2832,7 @@ const KEY='studentos_release_v12';
 function q(id){return document.getElementById(id)}
 function notify(msg,type='success'){try{showToast(msg,type)}catch{}}
 function upgradeBrand(){
-  document.title='Student OS v12.4 — Academic Workspace | Rizky Khoilillu Rochman';
+  document.title='Student OS v14.5 — Academic Workspace | Rizky Khoilillu Rochman';
   const h=document.querySelector('header h1'); if(h){h.innerHTML=`Student OS <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 font-bold">v${RELEASE}</span>`}
   const p=document.querySelector('header p'); if(p)p.innerHTML='Academic Workspace <span class="text-slate-500">•</span> Developed by <span class="text-slate-200 font-semibold">Rizky Khoilillu Rochman</span>';
   const f=document.querySelector('footer'); if(f)f.innerHTML=`Student OS v${RELEASE} &copy; 2026 — Developed by <span class="text-slate-100 font-bold">Rizky Khoilillu Rochman</span>`;
@@ -2865,7 +2860,7 @@ document.addEventListener('DOMContentLoaded',()=>{upgradeBrand();hardenStorage()
 </script>
 <script src="runtime-config.js"></script>
 
-<!-- Student OS v12.4 Production Web Release Patch -->
+<!-- Student OS v14.5 Production Web Release Patch -->
 <style>
 :root{--app-max:1440px}
 html{scroll-behavior:smooth}
@@ -2981,7 +2976,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 
 
-<!-- Student OS v12.4 final QA / UX patch -->
+<!-- Student OS v14.5 final QA / UX patch -->
 <style>
 .field-error{border-color:rgba(248,113,113,.9)!important;box-shadow:0 0 0 3px rgba(248,113,113,.10)!important}
 .ai-provider-select{background:transparent;border:0;outline:0;color:inherit;font-size:10px;font-weight:700;cursor:pointer}
